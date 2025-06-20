@@ -232,14 +232,39 @@
     <!-- 关于我们 -->
     <section id="about" class="py-16 md:py-24 bg-white">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <span class="text-primary font-semibold text-xl">关于我们</span>
-          <h3 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4" >成都弘亿科技有限公司</h3>
-          <p class="text-gray-600 text-xl max-w-3xl mx-auto" style="text-indent: 2em;">   成都弘亿科技有限公司注册于2017年，专门从事数据治理、企业数字化研究，致力于行业数据治理、数据资产入表、数据服务、智能识别、企业数字化应用的高新科技企业。</p>
-          <p class="text-gray-600 text-xl max-w-3xl mx-auto" style="text-indent: 2em;">   公司研发的自主知识产权软件产品包含：数据资产、数据标准、数据模型、指标体系、数据质量、元数据、数据生命周期、数据服务、数据安全、企业知识库、DCMM评估、企业架构、数据评估资产平台、主数据管理、数据可视化、基于AI应用产品等。</p>
-          <p class="text-gray-600 text-xl max-w-3xl mx-auto" style="text-indent: 2em;">   公司依托标杆企业、高校专家、行业资深技术专家团队的合作优势，公司培养了一个极具创新精神和创造能力的研发团队。我们的宏愿"智慧赋能、融合数字化服务推动新时代数字应用、展示每个客户精彩！"，期待与您的真诚合作！</p>
-        </div>
-        
+		  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+			<!-- 左侧：公司介绍 -->
+			<div class="text-left">
+			  <span class="text-primary font-semibold text-xl">关于我们</span>
+			  <h3 class="text-[clamp(1.6rem,4vw,2rem)] font-bold mt-2 mb-4">成都弘亿科技有限公司</h3>
+			  <p class="text-gray-600 text-lg max-w-3xl" style="text-indent: 2em;">成都弘亿科技有限公司注册于2017年，专门从事数据治理、企业数字化研究，致力于行业数据治理、数据资产入表、数据服务、智能识别、企业数字化应用的高新科技企业。</p>
+			  <p class="text-gray-600 text-lg max-w-3xl mt-4" style="text-indent: 2em;">公司研发的自主知识产权软件产品包含：数据资产、数据标准、数据模型、指标体系、数据质量、元数据、数据生命周期、数据服务、数据安全、企业知识库、DCMM评估、企业架构、数据评估资产平台、主数据管理、数据可视化、基于AI应用产品等。</p>
+			  <p class="text-gray-600 text-lg max-w-3xl mt-4" style="text-indent: 2em;">公司依托标杆企业、高校专家、行业资深技术专家团队的合作优势，公司培养了一个极具创新精神和创造能力的研发团队。我们的宏愿"智慧赋能、融合数字化服务推动新时代数字应用、展示每个客户精彩！"，期待与您的真诚合作！</p>
+			</div>
+
+			<!-- 右侧：典型客户 -->
+			<div class="bg-gray-50 p-8 rounded-xl">			 
+			  <img src="images/customers.png" alt="典型客户" class="w-full h-full object-cover">
+			</div>
+		  </div>
+
+		  <!-- 第二行：公司资质 -->
+		  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+			<div>
+			  <h3 class="text-xl font-bold mb-4 text-center">知识产权</h3>
+			  <div class="bg-gray-50 p-8 rounded-xl">
+				<img src="images/zscq.png" alt="知识产权" class="w-full h-full object-cover">
+			  </div>
+			</div>
+			<div>
+			  <h3 class="text-xl font-bold mb-4 text-center">荣誉认证</h3>
+			  <div class="bg-gray-50 p-8 rounded-xl">
+				<img src="images/gszz.png" alt="荣誉认证" class="w-full h-full object-cover">
+			  </div>
+			</div>
+		  </div>
+
+		  
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <div class="bg-gray-50 p-8 rounded-2xl text-center">
             <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -291,7 +316,7 @@
           <!-- 产品1 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/erp/600/400" alt="企业数据治理" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/10/600/400" alt="企业数据治理" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-primary/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 数据治理
               </div>
@@ -311,7 +336,7 @@
           <!-- 产品2 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/analytics/600/400" alt="主数据管理平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/11/600/400" alt="主数据管理平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-secondary/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 主数据
               </div>
@@ -331,7 +356,7 @@
           <!-- 产品3 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/ai/600/400" alt="数据集成服务平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/12/600/400" alt="数据集成服务平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-accent/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 数据集成
               </div>
@@ -351,7 +376,7 @@
           <!-- 产品4 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/cloud/600/400" alt="企业架构管理平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/13/600/400" alt="企业架构管理平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-primary/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 企业架构
               </div>
@@ -371,7 +396,7 @@
           <!-- 产品5 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/crm/600/400" alt="企业办公管理套件" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/14/600/400" alt="企业办公管理套件" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-secondary/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 企业通用办公
               </div>
@@ -391,7 +416,7 @@
           <!-- 产品6 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/ml/600/400" alt="企业一站式资产管理平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/15/600/400" alt="企业一站式资产管理平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-accent/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 一站式资产
               </div>
@@ -411,7 +436,7 @@
 		  <!-- 产品7 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/cloud/600/400" alt="数据可视化平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/16/600/400" alt="数据可视化平台" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-primary/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 可视化
               </div>
@@ -431,7 +456,7 @@
           <!-- 产品8 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/crm/600/400" alt="行业应用软件" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/17/600/400" alt="行业应用软件" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-secondary/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 应用软件
               </div>
@@ -454,7 +479,7 @@
           <!-- 产品9 -->
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
             <div class="relative h-60 overflow-hidden">
-              <img src="https://picsum.photos/seed/ml/600/400" alt="AI知识智能体" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="https://picsum.photos/id/18/600/400" alt="AI知识智能体" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
               <div class="absolute top-4 right-4 bg-accent/90 text-white text-sm font-medium px-3 py-1 rounded-full">
                 AI智能
               </div>
@@ -643,10 +668,10 @@
         <div>
           <h4 class="text-xl font-bold mb-4">产品中心</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">智能ERP系统</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">大数据分析平台</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">AI客户服务机器人</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业云平台</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业数据治理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">主数据管理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业通用套件</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">AI知识智能体</a></li>
           </ul>
         </div>
         
@@ -669,7 +694,7 @@
             </li>
             <li class="flex items-center">
               <i class="fa-solid fa-phone mr-3 text-gray-400"></i>
-              <span class="text-gray-400">19960352665</span>
+              <span class="text-gray-400">13688195989</span>
             </li>
             <li class="flex items-center">
               <i class="fa-solid fa-envelope mr-3 text-gray-400"></i>
@@ -680,7 +705,10 @@
       </div>
       
       <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
-        <p>© 2023 成都弘亿科技有限公司 版权所有</p>
+        <p> 备案编号：蜀ICP备2024084273号<br>
+			主办单位：成都弘亿科技有限公司
+		 <p>
+		</p>
       </div>
     </div>
   </footer>
