@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HY-MDM企业主数据管理系统 | 弘亿科技</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            accent: '#FF6B35',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .transition-transform-opacity {
+        transition-property: transform, opacity;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+      }
+      .section-padding {
+        @apply py-16 md:py-24;
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(54, 211, 153, 0.05) 100%);
+      }
+    }
+    
+    /* 动画效果 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-fadeInUp {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .responsive-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+  
+  <!-- 预加载字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="font-inter text-dark bg-light">
+  <!-- 导航栏 -->
+  <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16 md:h-20">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center space-x-2">
+          <img src="images/hongyi.png" alt="弘亿科技" class="h-10">          
+        </a>
+        
+        <!-- 桌面导航菜单 -->
+        <nav class="hidden md:flex space-x-8">
+          <a href="index.html#home" class="text-dark hover:text-primary transition-colors font-medium">首页</a>
+          <a href="index.html#about" class="text-dark hover:text-primary transition-colors font-medium">关于我们</a>
+          <a href="index.html#products" class="text-dark hover:text-primary transition-colors font-medium">产品中心</a>
+          <a href="index.html#testimonials" class="text-dark hover:text-primary transition-colors font-medium">客户评价</a>
+          <a href="index.html#contact" class="text-dark hover:text-primary transition-colors font-medium">联系我们</a>
+        </nav>
+        
+        <!-- 联系按钮 -->
+        <div class="hidden md:block">
+          <a href="index.html#contact" class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+            立即咨询
+          </a>
+        </div>
+        
+        <!-- 移动端菜单按钮 -->
+        <button id="menu-toggle" class="md:hidden text-dark focus:outline-none">
+          <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 移动端导航菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100 shadow-lg">
+      <div class="container mx-auto px-4 py-3 space-y-3">
+        <a href="index.html#home" class="block py-2 text-dark hover:text-primary transition-colors">首页</a>
+        <a href="index.html#about" class="block py-2 text-dark hover:text-primary transition-colors">关于我们</a>
+        <a href="index.html#products" class="block py-2 text-dark hover:text-primary transition-colors">产品中心</a>
+        <a href="index.html#testimonials" class="block py-2 text-dark hover:text-primary transition-colors">客户评价</a>
+        <a href="index.html#contact" class="block py-2 text-dark hover:text-primary transition-colors">联系我们</a>
+        <a href="index.html#contact" class="block py-2 mt-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-full text-center">
+          立即咨询
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="pt-28">
+    <!-- 产品头部 -->
+    <section class="pt-16 pb-24 gradient-bg">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+          <div class="w-full lg:w-1/2">
+            <div class="flex items-center mb-4">
+              <span class="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">主数据管理</span>
+              <span class="text-sm font-medium ml-2 bg-secondary/10 text-secondary px-3 py-1 rounded-full">企业核心数据</span>
+            </div>
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold leading-tight text-dark mb-6">
+              HY-MDM企业主数据管理系统
+            </h1>
+            <p class="text-xl text-primary font-semibold mb-8 max-w-xl">
+              构建企业数据基石，驱动智能决策
+            </p>
+            <p class="text-gray-600 text-lg mb-8 max-w-2xl">
+              通过统一、标准化的主数据管理，消除数据孤岛，提升数据质量与一致性，为企业运营、分析及决策提供可靠的数据基石。
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a href="#contact" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-medium transition-all shadow-lg hover:shadow-xl">
+                申请演示
+              </a>
+              <a href="#features" class="bg-white hover:bg-gray-50 text-primary border border-primary px-8 py-3 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+                了解功能
+              </a>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/2 relative">
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+              <img src="https://picsum.photos/id/20/1200/800" alt="HY-MDM主数据管理系统" class="w-full h-auto object-cover">
+            </div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/20 rounded-full blur-3xl -z-10"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心价值 -->
+    <section id="value" class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">核心价值</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">为什么企业需要主数据管理</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">解决企业核心数据分散、标准不统一、质量低下的问题</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-gradient-to-br from-primary/5 to-white p-8 rounded-2xl border border-gray-100">
+            <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-link text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3">消除数据孤岛</h3>
+            <p class="text-gray-600">统一管理企业核心数据，打通ERP、CRM、SCM等业务系统，实现数据互联互通。</p>
+          </div>
+          
+          <div class="bg-gradient-to-br from-primary/5 to-white p-8 rounded-2xl border border-gray-100">
+            <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-star text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3">提升数据质量</h3>
+            <p class="text-gray-600">通过标准化、规范化管理，确保数据一致性、准确性和完整性，提高数据可信度。</p>
+          </div>
+          
+          <div class="bg-gradient-to-br from-primary/5 to-white p-8 rounded-2xl border border-gray-100">
+            <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-chart-line text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3">赋能智能决策</h3>
+            <p class="text-gray-600">提供一致、准确的主数据基础，支撑企业数据分析与商业智能，驱动科学决策。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心功能亮点 -->
+    <section id="features" class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">核心功能</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">全面覆盖主数据管理全生命周期</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">从模型设计到数据治理，提供端到端的主数据管理解决方案</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- 左侧功能描述 -->
+          <div class="space-y-12">
+            <!-- 功能1 -->
+            <div class="flex">
+              <div class="flex-shrink-0 w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mr-6">
+                <i class="fa-solid fa-cube text-primary text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">全生命周期数据管理</h3>
+                <p class="text-gray-600 mb-2">• 智能建模：可视化模型设计（支持拖拽字段、规则配置），灵活定义供应商/客户/产品等核心主数据模型</p>
+                <p class="text-gray-600 mb-2">• 模板库管理：预置行业标准模板（如供应商模型），支持一键导入/导出，快速复用最佳实践</p>
+                <p class="text-gray-600">• 版本控制：完整记录模型变更历史，保障可追溯性</p>
+              </div>
+            </div>
+            
+            <!-- 功能2 -->
+            <div class="flex">
+              <div class="flex-shrink-0 w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mr-6">
+                <i class="fa-solid fa-layer-group text-primary text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">多维度分类体系</h3>
+                <p class="text-gray-600 mb-2">• 树形分类管理：按业务领域（供应链、客户关系）、主题领域（基础数据、交易数据）智能归类模型</p>
+                <p class="text-gray-600">• 动态统计看板：实时展示模型总量、发布状态，全局掌控数据资产</p>
+              </div>
+            </div>
+            
+            <!-- 功能3 -->
+            <div class="flex">
+              <div class="flex-shrink-0 w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mr-6">
+                <i class="fa-solid fa-gears text-primary text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">闭环流程治理</h3>
+                <p class="text-gray-600 mb-2">• 嵌入式工作流：无缝衔接流程设计→任务分发→执行监控（待办/已办任务跟踪）</p>
+                <p class="text-gray-600">• 规则引擎：自定义数据校验规则（如编码唯一性），确保数据合规性</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 右侧功能描述 -->
+          <div class="space-y-12">
+            <!-- 功能4 -->
+            <div class="flex">
+              <div class="flex-shrink-0 w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mr-6">
+                <i class="fa-solid fa-barcode text-primary text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">智能编码管理</h3>
+                <p class="text-gray-600 mb-2">• 动态编码生成：绑定规则自动生成结构化编码（如 SUP-2023-00001），避免人工错误</p>
+                <p class="text-gray-600">• 跨系统一致性：统一编码标准，打通ERP、CRM等业务系统数据</p>
+              </div>
+            </div>
+            
+            <!-- 功能5 -->
+            <div class="flex">
+              <div class="flex-shrink-0 w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mr-6">
+                <i class="fa-solid fa-chart-simple text-primary text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">数据质量可视化</h3>
+                <p class="text-gray-600 mb-2">• 质量雷达：实时监控数据完整性、准确性指标，生成诊断报告</p>
+                <p class="text-gray-600">• 调度任务：定时执行质量检查，主动预防风险</p>
+              </div>
+            </div>
+            
+            <!-- 功能6 -->
+            <div class="flex">
+              <div class="flex-shrink-0 w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mr-6">
+                <i class="fa-solid fa-shield text-primary text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">安全与审计</h3>
+                <p class="text-gray-600 mb-2">• 细粒度权限控制：基于角色和数据的访问控制</p>
+                <p class="text-gray-600">• 完整操作日志：记录所有数据操作，满足合规审计要求</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 差异化优势 -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">独特优势</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">HY-MDM的差异化价值</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">助力企业高效构建主数据管理体系</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-gradient-to-br from-primary/5 to-white p-8 rounded-2xl border border-gray-100">
+            <div class="text-primary text-5xl font-bold mb-4">20+</div>
+            <h3 class="text-xl font-bold mb-3">开箱即用</h3>
+            <p class="text-gray-600">预置20+行业模板（供应商/客户/组织模型），部署效率提升60%，快速实现价值</p>
+          </div>
+          
+          <div class="bg-gradient-to-br from-primary/5 to-white p-8 rounded-2xl border border-gray-100">
+            <div class="text-primary text-5xl font-bold mb-4">∞</div>
+            <h3 class="text-xl font-bold mb-3">柔性扩展</h3>
+            <p class="text-gray-600">模块化设计，支持自定义字段、表单及流程，灵活适配企业个性化需求</p>
+          </div>
+          
+          <div class="bg-gradient-to-br from-primary/5 to-white p-8 rounded-2xl border border-gray-100">
+            <div class="text-primary text-5xl font-bold mb-4">100%</div>
+            <h3 class="text-xl font-bold mb-3">安全可控</h3>
+            <p class="text-gray-600">细粒度权限体系（模型编辑、发布分级管控），满足审计合规要求，保障数据安全</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户场景价值 -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">行业应用</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">多行业客户场景价值实现</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">解决行业特定痛点，释放数据价值</p>
+        </div>
+        
+        <div class="responsive-table">
+          <table class="min-w-full bg-white rounded-xl overflow-hidden shadow-md">
+            <thead class="bg-primary/10">
+              <tr>
+                <th class="py-4 px-6 text-left font-bold">行业</th>
+                <th class="py-4 px-6 text-left font-bold">痛点场景</th>
+                <th class="py-4 px-6 text-left font-bold">解决方案成效</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="py-4 px-6 font-medium">制造业</td>
+                <td class="py-4 px-6">多系统供应商数据不一致，采购效率低下</td>
+                <td class="py-4 px-6">
+                  <div class="flex items-center">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>统一主数据模型，供应商数据一致性提升95%</span>
+                  </div>
+                  <div class="flex items-center mt-2">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>采购流程效率提升40%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="py-4 px-6 font-medium">零售业</td>
+                <td class="py-4 px-6">客户信息分散，画像不精准，营销效果差</td>
+                <td class="py-4 px-6">
+                  <div class="flex items-center">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>构建360°客户视图，客户画像准确率提升85%</span>
+                  </div>
+                  <div class="flex items-center mt-2">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>营销转化率提升30%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-4 px-6 font-medium">医疗</td>
+                <td class="py-4 px-6">耗材编码混乱，管理成本高，库存周转慢</td>
+                <td class="py-4 px-6">
+                  <div class="flex items-center">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>建立标准化耗材编码体系，管理成本降低45%</span>
+                  </div>
+                  <div class="flex items-center mt-2">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>库存周转率提升60%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="py-4 px-6 font-medium">金融</td>
+                <td class="py-4 px-6">客户信息不完整，风险管控困难</td>
+                <td class="py-4 px-6">
+                  <div class="flex items-center">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>建立完整客户主数据，KYC效率提升50%</span>
+                  </div>
+                  <div class="flex items-center mt-2">
+                    <i class="fa-solid fa-check-circle text-secondary mr-2"></i>
+                    <span>风险识别准确率提升35%</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户证言 -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">客户证言</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">来自行业领导者的认可</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-gray-50 p-8 rounded-2xl">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
+                <img src="https://picsum.photos/seed/leader1/100/100" alt="客户头像" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">张总</h4>
+                <p class="text-gray-500 text-sm">某制造业集团CIO</p>
+              </div>
+            </div>
+            <div class="flex text-amber-500 mb-4">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-gray-600 italic">"弘亿的HY-MDM系统彻底解决了我们长期存在的供应商数据不一致问题。现在，采购、财务、仓储等部门使用统一的主数据，效率大幅提升，错误率显著降低。系统部署非常迅速，预置的制造业模板帮我们节省了大量时间。"</p>
+          </div>
+          
+          <div class="bg-gray-50 p-8 rounded-2xl">
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
+                <img src="https://picsum.photos/seed/leader2/100/100" alt="客户头像" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">李总监</h4>
+                <p class="text-gray-500 text-sm">某零售连锁企业CTO</p>
+              </div>
+            </div>
+            <div class="flex text-amber-500 mb-4">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-gray-600 italic">"通过HY-MDM系统，我们建立了统一的客户主数据管理平台。现在，线上线下客户数据完全打通，营销团队可以基于完整的客户画像开展精准营销活动。过去6个月，我们的营销转化率提升了30%，客户满意度也显著提高。"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 联系表单 -->
+    <section id="contact" class="py-16 bg-gradient-to-br from-primary/5 to-light">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="md:flex">
+            <div class="md:w-1/2 bg-primary p-10 text-white">
+              <h3 class="text-2xl font-bold mb-4">获取专属解决方案</h3>
+              <p class="mb-6">请填写右侧表单，我们的解决方案专家将在24小时内与您联系，为您提供个性化的产品演示和解决方案咨询。</p>
+              <div class="space-y-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center mr-4">
+                    <i class="fa-solid fa-phone"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">咨询热线</p>
+                    <p class="text-lg">19960352665</p>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center mr-4">
+                    <i class="fa-solid fa-envelope"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">电子邮箱</p>
+                    <p class="text-lg">cdhongyi@outlook.com</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="md:w-1/2 p-10">
+              <form class="space-y-4">
+                <div>
+                  <label class="block text-gray-700 mb-2">您的姓名</label>
+                  <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-2">联系电话</label>
+                  <input type="tel" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-2">公司名称</label>
+                  <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                  <label class="block text-gray-700 mb-2">您的需求</label>
+                  <textarea rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-md hover:shadow-lg mt-4">
+                  提交申请
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4">弘亿科技</h4>
+          <p class="text-gray-400 mb-4">领先的企业解决方案提供商，助力企业数字化转型。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-weixin text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-linkedin-in text-xl"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">产品中心</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业数据治理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">主数据管理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业通用套件</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">AI知识智能体</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">快速链接</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+            <li><a href="index.html#about" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+            <li><a href="index.html#products" class="text-gray-400 hover:text-white transition-colors">产品中心</a></li>
+            <li><a href="index.html#contact" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">联系我们</h4>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-400"></i>
+              <span class="text-gray-400">成都市天府新区天府大道南段2039号</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone mr-3 text-gray-400"></i>
+              <span class="text-gray-400">13688195989</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope mr-3 text-gray-400"></i>
+              <span class="text-gray-400">cdhongyi@outlook.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
+        <p> 备案编号：蜀ICP备2024084273号<br>主办单位：成都弘亿科技有限公司</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // 移动端菜单切换
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // 动画效果
+    document.addEventListener('DOMContentLoaded', function() {
+      const animatedElements = document.querySelectorAll('.animate-on-scroll');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-fadeInUp');
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+      
+      animatedElements.forEach(element => {
+        observer.observe(element);
+      });
+    });
+  </script>
+</body>
+</html>
