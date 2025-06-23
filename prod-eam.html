@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HY-EAM企业架构管理 - 弘亿科技</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            accent: '#FF6B35',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .transition-transform-opacity {
+        transition-property: transform, opacity;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+      }
+      .section-padding {
+        @apply py-16 md:py-24;
+      }
+      .feature-icon {
+        @apply w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4;
+      }
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .carousel-item img {
+        height: 300px;
+        object-fit: cover;
+      }
+    }
+    
+    /* 产品特色卡片 */
+    .feature-card {
+      @apply bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300;
+    }
+    
+    /* 价值定位部分 */
+    .value-card {
+      @apply bg-gradient-to-br from-primary/5 to-white rounded-2xl p-8 shadow-md;
+    }
+    
+    /* 表格样式 */
+    .feature-table {
+      @apply w-full text-left border-collapse;
+    }
+    .feature-table th {
+      @apply bg-primary/10 py-4 px-6 font-bold;
+    }
+    .feature-table td {
+      @apply border-b border-gray-200 py-4 px-6;
+    }
+    .feature-table tr:last-child td {
+      @apply border-b-0;
+    }
+  </style>
+  
+  <!-- 预加载字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="font-inter text-dark bg-light">
+  <!-- 导航栏 -->
+  <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16 md:h-20">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center space-x-2">
+          <img src="images/hongyi.png" alt="弘亿科技" class="h-10">          
+        </a>
+        
+        <!-- 桌面导航菜单 -->
+        <nav class="hidden md:flex space-x-8">
+          <a href="index.html#home" class="text-dark hover:text-primary transition-colors font-medium">首页</a>
+          <a href="index.html#about" class="text-dark hover:text-primary transition-colors font-medium">关于我们</a>
+          <a href="index.html#products" class="text-dark hover:text-primary transition-colors font-medium">产品中心</a>
+          <a href="index.html#testimonials" class="text-dark hover:text-primary transition-colors font-medium">客户评价</a>
+          <a href="index.html#contact" class="text-dark hover:text-primary transition-colors font-medium">联系我们</a>
+        </nav>
+        
+        <!-- 联系按钮 -->
+        <div class="hidden md:block">
+          <a href="index.html#contact" class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+            立即咨询
+          </a>
+        </div>
+        
+        <!-- 移动端菜单按钮 -->
+        <button id="menu-toggle" class="md:hidden text-dark focus:outline-none">
+          <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 移动端导航菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100 shadow-lg">
+      <div class="container mx-auto px-4 py-3 space-y-3">
+        <a href="index.html#home" class="block py-2 text-dark hover:text-primary transition-colors">首页</a>
+        <a href="index.html#about" class="block py-2 text-dark hover:text-primary transition-colors">关于我们</a>
+        <a href="index.html#products" class="block py-2 text-dark hover:text-primary transition-colors">产品中心</a>
+        <a href="index.html#testimonials" class="block py-2 text-dark hover:text-primary transition-colors">客户评价</a>
+        <a href="index.html#contact" class="block py-2 text-dark hover:text-primary transition-colors">联系我们</a>
+        <a href="index.html#contact" class="block py-2 mt-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-full text-center">
+          立即咨询
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="pt-28">
+    <!-- 产品头部 -->
+    <section class="py-16 md:py-20 bg-gradient-to-br from-primary/5 to-light">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-8">
+          <div class="w-full lg:w-1/2">
+            <a href="index.html#products" class="inline-flex items-center text-primary hover:text-primary/80 mb-4">
+              <i class="fa-solid fa-arrow-left mr-2"></i> 返回产品中心
+            </a>
+            <div class="flex items-center mb-4">
+              <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">企业架构</span>
+            </div>
+            <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6">
+              HY-EAM 企业架构管理平台
+            </h1>
+            <p class="text-gray-600 text-xl mb-8 max-w-2xl">
+              "让企业架构成为数字化转型的罗盘，而非地图上的孤岛"
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a href="#contact" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-medium transition-all shadow-lg hover:shadow-xl">
+                预约演示
+              </a>
+              <a href="#contact" class="bg-white hover:bg-gray-50 text-primary border border-primary px-8 py-3 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+                获取方案
+              </a>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/2 relative">
+            <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
+              <img src="https://picsum.photos/id/20/800/500" alt="企业架构管理平台" class="w-full h-auto object-cover">
+            </div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/20 rounded-full blur-3xl -z-10"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心价值定位 -->
+    <section class="section-padding bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">核心价值</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">全域可视·智能决策·敏捷进化</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">为企业提供全生命周期数字化治理中枢，通过统一架构模型驱动战略落地</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fa-solid fa-bullseye text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-center">战略驱动</h3>
+            <p class="text-gray-600 text-center">打通业务-技术断层，实现从战略规划到IT执行的端到端管控</p>
+          </div>
+          
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fa-solid fa-brain text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-center">智能决策</h3>
+            <p class="text-gray-600 text-center">基于AI的架构分析引擎，提供智能决策支持，降低转型风险</p>
+          </div>
+          
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fa-solid fa-rocket text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-center">敏捷进化</h3>
+            <p class="text-gray-600 text-center">内置行业转型框架，加速企业数字化转型进程</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心功能亮点 -->
+    <section class="section-padding bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">核心功能</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">全面覆盖企业架构管理需求</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">提供从建模到监控的全套企业架构管理工具</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="w-1/4">模块</th>
+                <th>核心能力说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-bold">四维架构建模</td>
+                <td>可视化构建BA/DA/AA/TA四层架构模型，支持TOGAF、ArchiMate等行业标准</td>
+              </tr>
+              <tr>
+                <td class="font-bold">架构导航图</td>
+                <td>动态交互式全景地图，实时展示业务能力、系统依赖、技术栈分布，支持钻取分析</td>
+              </tr>
+              <tr>
+                <td class="font-bold">价值流分析器</td>
+                <td>量化业务价值流动路径，识别流程瓶颈，优化资源配置（如：客户旅程→流程→系统支撑）</td>
+              </tr>
+              <tr>
+                <td class="font-bold">数字化转型框架</td>
+                <td>内置金融/制造/政府等行业转型模板，快速构建适配企业的数字化演进路线图</td>
+              </tr>
+              <tr>
+                <td class="font-bold">智能知识库</td>
+                <td>支持架构资产语义检索、版本追踪、影响分析，沉淀企业架构DNA</td>
+              </tr>
+              <tr>
+                <td class="font-bold">全景监控台</td>
+                <td>架构健康度实时评分（耦合度/复用率/敏捷指数），异常变更自动预警</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 差异化优势 -->
+    <section class="section-padding bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">产品优势</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">超越传统的架构管理平台</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">专为企业数字化转型设计的全面解决方案</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-layer-group text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">全栈融合管理</h3>
+                <p class="text-gray-600">业内唯一覆盖战略层（价值流）→ 设计层（四维建模）→ 执行层（任务/流程）的全生命周期平台，打破传统工具碎片化管理困局</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-robot text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">智能决策引擎</h3>
+                <p class="text-gray-600">基于架构拓扑的AI仿真能力：业务扩容 → 自动预测IT资源需求，系统改造 → 智能评估影响范围</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-box-open text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">开箱即用场景库</h3>
+                <p class="text-gray-600">预置20+行业解决方案（如：信创适配评估、并购系统整合、云迁移路径规划），实施效率提升60%</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-mobile-alt text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">轻量协同生态</h3>
+                <p class="text-gray-600">微信小程序移动评审 + 流程引擎无缝对接OA/DevOps，实现"架构设计-开发-运维"闭环</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户场景价值 -->
+    <section class="section-padding bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">客户价值</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">解决企业关键角色的核心痛点</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">为不同角色提供针对性的价值实现方案</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="w-1/4">客户角色</th>
+                <th class="w-1/3">痛点场景</th>
+                <th>本平台价值实现</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-bold">CIO/CTO</td>
+                <td>战略与IT执行脱节</td>
+                <td>通过业务能力地图对齐战略目标，IT投资精准匹配业务优先级</td>
+              </tr>
+              <tr>
+                <td class="font-bold">企业架构师</td>
+                <td>跨部门架构资产难以统管</td>
+                <td>四维架构模型自动关联，变更影响一键追溯，协作效率提升40%</td>
+              </tr>
+              <tr>
+                <td class="font-bold">数字化转型部</td>
+                <td>转型路径不清晰</td>
+                <td>内置行业转型框架+价值流分析，快速输出可落地的演进路线图</td>
+              </tr>
+              <tr>
+                <td class="font-bold">项目经理</td>
+                <td>系统改造风险不可控</td>
+                <td>技术架构依赖图预判影响范围，降低项目实施风险30%</td>
+              </tr>
+              <tr>
+                <td class="font-bold">审计风控部</td>
+                <td>合规审计效率低</td>
+                <td>自动生成架构合规报告（等保/信创/GDPR），取证时间减少70%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 视觉化呈现 -->
+    <section class="section-padding bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">视觉呈现</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">直观展示企业架构与转型路径</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">通过先进的可视化技术提升决策效率</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div>
+            <h3 class="text-xl font-bold mb-3">业务能力热力图</h3>
+            <p class="text-gray-600">按价值贡献度着色业务域，直观暴露能力短板</p>
+          </div>
+          
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div>
+            <h3 class="text-xl font-bold mb-3">技术债沙盘推演</h3>
+            <p class="text-gray-600">模拟不同还债策略对敏捷性的长期影响</p>
+          </div>
+          
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div>
+            <h3 class="text-xl font-bold mb-3">转型路线甘特图</h3>
+            <p class="text-gray-600">联动架构模型与实施计划，关键里程碑自动预警</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户成果 -->
+    <section class="section-padding bg-gradient-to-br from-primary/5 to-light">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">客户成果</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">见证企业架构管理的实际价值</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">众多企业通过HY-EAM平台实现了数字化转型的突破</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                <img src="https://picsum.photos/seed/bank/100/100" alt="银行客户" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">某大型商业银行</h4>
+                <p class="text-gray-500 text-sm">金融行业数字化转型案例</p>
+              </div>
+            </div>
+            <div class="bg-primary/5 p-6 rounded-xl mb-4">
+              <div class="text-3xl font-bold text-primary mb-2">58%</div>
+              <p class="text-gray-600">缩短新业务上线周期</p>
+            </div>
+            <p class="text-gray-600">"通过架构复用分析，我们实现了业务流程的快速重构，大大提升了业务响应速度。"</p>
+          </div>
+          
+          <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                <img src="https://picsum.photos/seed/manufacture/100/100" alt="制造客户" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">某跨国制造企业</h4>
+                <p class="text-gray-500 text-sm">制造业数字化转型案例</p>
+              </div>
+            </div>
+            <div class="bg-primary/5 p-6 rounded-xl mb-4">
+              <div class="text-3xl font-bold text-primary mb-2">42%</div>
+              <p class="text-gray-600">降低系统集成成本</p>
+            </div>
+            <p class="text-gray-600">"依赖关系可视化优化帮助我们减少了冗余系统，简化了IT架构，每年节省数百万集成成本。"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 行动召唤 -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-primary to-primary/90 rounded-3xl p-12 text-center text-white">
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-6">准备好开启企业架构管理之旅了吗？</h2>
+          <p class="text-white/90 max-w-2xl mx-auto text-lg mb-8">立即预约产品演示，了解HY-EAM如何帮助您的企业实现数字化转型</p>
+          <a href="#contact" class="inline-block bg-white text-primary hover:bg-gray-100 px-8 py-3 rounded-full font-bold transition-all shadow-lg hover:shadow-xl">
+            立即预约演示
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4">弘亿科技</h4>
+          <p class="text-gray-400 mb-4">领先的企业解决方案提供商，助力企业数字化转型。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-weixin text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-linkedin-in text-xl"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">产品中心</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业数据治理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">主数据管理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业通用套件</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">AI知识智能体</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">快速链接</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+            <li><a href="index.html#about" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+            <li><a href="index.html#products" class="text-gray-400 hover:text-white transition-colors">产品中心</a></li>
+            <li><a href="index.html#contact" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">联系我们</h4>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-400"></i>
+              <span class="text-gray-400">成都市天府新区天府大道南段2039号</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone mr-3 text-gray-400"></i>
+              <span class="text-gray-400">13688195989</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope mr-3 text-gray-400"></i>
+              <span class="text-gray-400">cdhongyi@outlook.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
+        <p> 备案编号：蜀ICP备2024084273号<br>
+          主办单位：成都弘亿科技有限公司
+        <p>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 页面脚本 -->
+  <script>
+    // 移动端菜单切换
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

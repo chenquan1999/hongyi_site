@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HY-EGO企业通用办公套件 - 弘亿科技</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            accent: '#FF6B35',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .transition-transform-opacity {
+        transition-property: transform, opacity;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+      }
+      .section-padding {
+        @apply py-16 md:py-24;
+      }
+      .feature-icon {
+        @apply w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4;
+      }
+      .value-card {
+        @apply bg-gradient-to-br from-primary/5 to-white rounded-2xl p-8 shadow-md;
+      }
+      .feature-card {
+        @apply bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300;
+      }
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .carousel-item img {
+        height: 300px;
+        object-fit: cover;
+      }
+    }
+    
+    /* 表格样式 */
+    .feature-table {
+      @apply w-full text-left border-collapse;
+    }
+    .feature-table th {
+      @apply bg-primary/10 py-4 px-6 font-bold;
+    }
+    .feature-table td {
+      @apply border-b border-gray-200 py-4 px-6;
+    }
+    .feature-table tr:last-child td {
+      @apply border-b-0;
+    }
+    
+    /* 特色标签 */
+    .feature-badge {
+      @apply inline-block bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2;
+    }
+  </style>
+  
+  <!-- 预加载字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="font-inter text-dark bg-light">
+  <!-- 导航栏 -->
+  <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16 md:h-20">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center space-x-2">
+          <img src="images/hongyi.png" alt="弘亿科技" class="h-10">          
+        </a>
+        
+        <!-- 桌面导航菜单 -->
+        <nav class="hidden md:flex space-x-8">
+          <a href="index.html#home" class="text-dark hover:text-primary transition-colors font-medium">首页</a>
+          <a href="index.html#about" class="text-dark hover:text-primary transition-colors font-medium">关于我们</a>
+          <a href="index.html#products" class="text-dark hover:text-primary transition-colors font-medium">产品中心</a>
+          <a href="index.html#testimonials" class="text-dark hover:text-primary transition-colors font-medium">客户评价</a>
+          <a href="index.html#contact" class="text-dark hover:text-primary transition-colors font-medium">联系我们</a>
+        </nav>
+        
+        <!-- 联系按钮 -->
+        <div class="hidden md:block">
+          <a href="index.html#contact" class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+            立即咨询
+          </a>
+        </div>
+        
+        <!-- 移动端菜单按钮 -->
+        <button id="menu-toggle" class="md:hidden text-dark focus:outline-none">
+          <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 移动端导航菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100 shadow-lg">
+      <div class="container mx-auto px-4 py-3 space-y-3">
+        <a href="index.html#home" class="block py-2 text-dark hover:text-primary transition-colors">首页</a>
+        <a href="index.html#about" class="block py-2 text-dark hover:text-primary transition-colors">关于我们</a>
+        <a href="index.html#products" class="block py-2 text-dark hover:text-primary transition-colors">产品中心</a>
+        <a href="index.html#testimonials" class="block py-2 text-dark hover:text-primary transition-colors">客户评价</a>
+        <a href="index.html#contact" class="block py-2 text-dark hover:text-primary transition-colors">联系我们</a>
+        <a href="index.html#contact" class="block py-2 mt-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-full text-center">
+          立即咨询
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="pt-28">
+    <!-- 产品头部 -->
+    <section class="py-16 md:py-20 bg-gradient-to-br from-primary/5 to-light">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-8">
+          <div class="w-full lg:w-1/2">
+            <a href="index.html#products" class="inline-flex items-center text-primary hover:text-primary/80 mb-4">
+              <i class="fa-solid fa-arrow-left mr-2"></i> 返回产品中心
+            </a>
+            <div class="flex items-center mb-4">
+              <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">企业办公</span>
+              <span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-medium ml-2">智能协同</span>
+            </div>
+            <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6">
+              HY-EGO 企业通用办公套件
+            </h1>
+            <p class="text-gray-600 text-xl mb-8 max-w-2xl">
+              "一站式业务闭环，让协同发生在业务场景中"
+            </p>
+            <div class="flex flex-wrap gap-4 mb-8">
+              <span class="feature-badge">流程管理</span>
+              <span class="feature-badge">知识管理</span>
+              <span class="feature-badge">项目管理</span>
+              <span class="feature-badge">智能沟通</span>
+              <span class="feature-badge">AI助手</span>
+            </div>
+            <div class="flex flex-wrap gap-4">
+              <a href="#contact" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-medium transition-all shadow-lg hover:shadow-xl">
+                预约演示
+              </a>
+              <a href="#contact" class="bg-white hover:bg-gray-50 text-primary border border-primary px-8 py-3 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+                获取方案
+              </a>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/2 relative">
+            <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
+              <img src="https://picsum.photos/id/21/800/500" alt="企业通用办公套件" class="w-full h-auto object-cover">
+            </div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/20 rounded-full blur-3xl -z-10"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心价值定位 -->
+    <section class="section-padding bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">核心价值</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">一站式业务闭环，让协同发生在业务场景中</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">打通流程-知识-沟通-项目四大核心场景，重塑数字化工作方式</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fa-solid fa-sitemap text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-center">场景融合</h3>
+            <p class="text-gray-600 text-center">打通流程-知识-沟通-项目四大核心场景，实现业务闭环</p>
+          </div>
+          
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fa-solid fa-brain text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-center">智能协同</h3>
+            <p class="text-gray-600 text-center">通过智能引擎连接企业架构与业务执行，实现无缝协同</p>
+          </div>
+          
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fa-solid fa-bolt text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-center">高效执行</h3>
+            <p class="text-gray-600 text-center">从战略设计到任务落地的无缝协同，提升工作效率</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心功能亮点 -->
+    <section class="section-padding bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">核心功能</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">全方位提升企业办公效率</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">提供从流程管理到项目协作的全套办公解决方案</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="w-1/4">模块</th>
+                <th>突破性能力</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-bold">智能流程中枢</td>
+                <td>
+                  <p>低代码拖拽式流程设计+AI审批路由优化</p>
+                  <p class="text-primary mt-2">实时效能看板（平均处理时长/积压预警）</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-bold">活体知识库</td>
+                <td>
+                  <p>文档与业务架构模型智能关联（点击流程节点自动调取SOP）</p>
+                  <p class="text-primary mt-2">多模态检索（图文/语音/语义）</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-bold">全息办公套件</td>
+                <td>
+                  <p>Visio级建模工具：直接拖拽架构图生成技术文档</p>
+                  <p>PPT智能助手：自动将思维导图转为演讲框架</p>
+                  <p class="text-primary mt-2">日程穿透：会议日程→任务卡→项目甘特图自动联动</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-bold">敏捷项目管理</td>
+                <td>
+                  <p>WBS任务自动拆解（输入目标→生成带依赖关系的甘特图）</p>
+                  <p class="text-primary mt-2">资源冲突预警：多人协作时自动检测工时超负荷</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 差异化优势 -->
+    <section class="section-padding bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">产品优势</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">超越传统办公软件的创新体验</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">专为企业高效协同设计的智能办公解决方案</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-network-wired text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">业务场景穿透力</h3>
+                <p class="text-gray-600">业内唯一支持 "架构模型→流程→知识→任务"四维穿透：</p>
+                <ul class="mt-2 list-disc list-inside text-gray-600">
+                  <li>在PPT中插入业务架构图 → 点击元件自动显示关联系统文档</li>
+                  <li>流程审批时自动推送历史相似案例</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-robot text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">AI生产力引擎</h3>
+                <p class="text-gray-600">智能技术赋能办公全流程：</p>
+                <ul class="mt-2 list-disc list-inside text-gray-600">
+                  <li>智能摘要：会议录音→自动生成待办事项插入项目看板</li>
+                  <li>预测调度：根据历史数据为流程节点推荐最优处理人</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-plug text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">零摩擦集成</h3>
+                <p class="text-gray-600">无缝连接企业现有系统：</p>
+                <ul class="mt-2 list-disc list-inside text-gray-600">
+                  <li>流程引擎直连企业架构库（流程变更自动触发架构影响分析）</li>
+                  <li>项目看板嵌入IM群组（任务讨论上下文自动存档至知识库）</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="flex items-start">
+              <div class="feature-icon">
+                <i class="fa-solid fa-shield-alt text-primary text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-xl font-bold mb-3">军工级安全协同</h3>
+                <p class="text-gray-600">保障企业数据安全：</p>
+                <ul class="mt-2 list-disc list-inside text-gray-600">
+                  <li>文档动态水印+操作留痕审计</li>
+                  <li>通讯录分级可见（支持万人级组织架构秒级检索）</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户场景价值 -->
+    <section class="section-padding bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">客户价值</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">解决企业关键角色的核心痛点</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">为不同部门提供针对性的办公效率解决方案</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th class="w-1/4">客户角色</th>
+                <th class="w-1/3">痛点场景</th>
+                <th>本套件价值实现</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-bold">运营总监</td>
+                <td>跨部门流程执行效率低</td>
+                <td>流程机器人自动催办+积压预警，审批时效提升50%</td>
+              </tr>
+              <tr>
+                <td class="font-bold">研发经理</td>
+                <td>项目资源冲突频发</td>
+                <td>甘特图资源负载热力图，实时暴露冲突点，项目延期率降低35%</td>
+              </tr>
+              <tr>
+                <td class="font-bold">知识管理者</td>
+                <td>经验沉淀难复用</td>
+                <td>流程执行中自动推送历史案例，新人培训成本减少40%</td>
+              </tr>
+              <tr>
+                <td class="font-bold">销售团队</td>
+                <td>客户需求响应慢</td>
+                <td>IM沟通记录自动生成客户画像，方案PPT一键调用知识库模板</td>
+              </tr>
+              <tr>
+                <td class="font-bold">财务部门</td>
+                <td>报销流程透明度低</td>
+                <td>可视化流程地图+实时进度追踪，员工查询量下降70%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关键能力可视化 -->
+    <section class="section-padding bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">可视化能力</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">直观展示办公流程与项目状态</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">通过先进的可视化技术提升办公效率和决策质量</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div>
+            <h3 class="text-xl font-bold mb-3">流程数字孪生</h3>
+            <p class="text-gray-600">3D拓扑图展示流程各节点状态（绿色畅通/红色阻塞），点击阻塞点自动显示关联知识文档</p>
+          </div>
+          
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div>
+            <h3 class="text-xl font-bold mb-3">项目时空沙盘</h3>
+            <p class="text-gray-600">拖拽调整任务时间线 → 自动计算资源冲突矩阵，风险任务自动标记闪电图标</p>
+          </div>
+          
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div>
+            <h3 class="text-xl font-bold mb-3">智能知识图谱</h3>
+            <p class="text-gray-600">输入业务关键词 → 自动生成关联文档/流程/项目三维网络图</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户成果 -->
+    <section class="section-padding bg-gradient-to-br from-primary/5 to-light">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-xl">客户成果</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-4">见证企业办公效率的显著提升</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">众多企业通过HY-EGO套件实现了办公效率的突破</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                <img src="https://picsum.photos/seed/logistics/100/100" alt="物流企业" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">某大型物流企业</h4>
+                <p class="text-gray-500 text-sm">运营效率提升案例</p>
+              </div>
+            </div>
+            <div class="bg-primary/5 p-6 rounded-xl mb-4">
+              <div class="text-3xl font-bold text-primary mb-2">从3天→4小时</div>
+              <p class="text-gray-600">流程处理时效提升</p>
+            </div>
+            <p class="text-gray-600">"通过智能路由和自动填表功能，我们的流程处理时间从平均3天缩短到4小时以内，大大提升了客户满意度。"</p>
+          </div>
+          
+          <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <div class="flex items-center mb-6">
+              <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                <img src="https://picsum.photos/seed/tech/100/100" alt="科技公司" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">某科技创新公司</h4>
+                <p class="text-gray-500 text-sm">项目管理效率提升案例</p>
+              </div>
+            </div>
+            <div class="bg-primary/5 p-6 rounded-xl mb-4">
+              <div class="text-3xl font-bold text-primary mb-2">缩短32%</div>
+              <p class="text-gray-600">项目交付周期</p>
+            </div>
+            <p class="text-gray-600">"资源冲突预判功能帮助我们提前发现并解决了资源分配问题，项目交付周期平均缩短了32%。"</p>
+          </div>
+        </div>
+        
+        <div class="mt-12 bg-white rounded-2xl p-8 shadow-lg">
+          <div class="flex flex-col md:flex-row items-center">
+            <div class="w-full md:w-1/3 mb-6 md:mb-0">
+              <div class="text-4xl font-bold text-primary text-center">58%</div>
+              <p class="text-gray-600 text-center mt-2">平均流程处理时间减少</p>
+            </div>
+            <div class="w-full md:w-1/3 mb-6 md:mb-0">
+              <div class="text-4xl font-bold text-primary text-center">45%</div>
+              <p class="text-gray-600 text-center mt-2">会议效率提升</p>
+            </div>
+            <div class="w-full md:w-1/3">
+              <div class="text-4xl font-bold text-primary text-center">67%</div>
+              <p class="text-gray-600 text-center mt-2">知识检索时间减少</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 行动召唤 -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-primary to-primary/90 rounded-3xl p-12 text-center text-white">
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mt-2 mb-6">准备好提升企业办公效率了吗？</h2>
+          <p class="text-white/90 max-w-2xl mx-auto text-lg mb-8">立即预约产品演示，了解HY-EGO如何帮助您的企业实现智能协同办公</p>
+          <a href="#contact" class="inline-block bg-white text-primary hover:bg-gray-100 px-8 py-3 rounded-full font-bold transition-all shadow-lg hover:shadow-xl">
+            立即预约演示
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4">弘亿科技</h4>
+          <p class="text-gray-400 mb-4">领先的企业解决方案提供商，助力企业数字化转型。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-weixin text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa-brands fa-linkedin-in text-xl"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">产品中心</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业数据治理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">主数据管理</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">企业通用套件</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">AI知识智能体</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">快速链接</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+            <li><a href="index.html#about" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+            <li><a href="index.html#products" class="text-gray-400 hover:text-white transition-colors">产品中心</a></li>
+            <li><a href="index.html#contact" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-xl font-bold mb-4">联系我们</h4>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-400"></i>
+              <span class="text-gray-400">成都市天府新区天府大道南段2039号</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone mr-3 text-gray-400"></i>
+              <span class="text-gray-400">13688195989</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope mr-3 text-gray-400"></i>
+              <span class="text-gray-400">cdhongyi@outlook.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
+        <p> 备案编号：蜀ICP备2024084273号<br>
+          主办单位：成都弘亿科技有限公司
+        <p>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 页面脚本 -->
+  <script>
+    // 移动端菜单切换
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
