@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>主数据管理系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#4080FF',
+            success: '#00B42A',
+            warning: '#FF7D00',
+            danger: '#F53F3F',
+            info: '#86909C',
+            light: '#F2F3F5',
+            dark: '#1D2129',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .sidebar-item-active {
+        @apply bg-primary/10 text-primary border-l-4 border-primary;
+      }
+      .btn-hover {
+        @apply transition-all duration-200 hover:shadow-md;
+      }
+      .table-row-hover {
+        @apply transition-colors duration-150 hover:bg-light;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen flex flex-col">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-sm sticky top-0 z-30">
+    <div class="flex items-center justify-between px-4 py-3">
+      <div class="flex items-center space-x-4">
+        <button id="sidebar-toggle" class="p-2 rounded-md hover:bg-gray-100 transition-colors">
+          <i class="fa fa-bars text-gray-600"></i>
+        </button>
+        <div class="text-lg font-semibold text-primary">主数据管理系统</div>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <input type="text" placeholder="全局搜索..." class="pl-10 pr-4 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+          <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <i class="fa fa-bell-o"></i>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <i class="fa fa-question-circle-o"></i>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <i class="fa fa-user"></i>
+            </div>
+            <span class="hidden sm:inline-block">管理员</span>
+            <i class="fa fa-angle-down text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- 左侧边栏 -->
+    <aside id="sidebar" class="w-64 bg-white shadow-sm flex-shrink-0 transition-all duration-300 ease-in-out z-20 overflow-y-auto scrollbar-hide">
+      <div class="p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wider">导航菜单</h2>
+          <button class="p-1 rounded-md hover:bg-gray-100 transition-colors">
+            <i class="fa fa-plus text-gray-500 text-xs"></i>
+          </button>
+        </div>
+        
+        <div class="space-y-1">
+          <div class="sidebar-item-active flex items-center justify-between p-2 rounded-md">
+            <div class="flex items-center space-x-3">
+              <div class="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                <i class="fa fa-sitemap"></i>
+              </div>
+              <span class="text-sm font-medium">主数据管理框架</span>
+            </div>
+            <button class="p-1 text-gray-400 hover:text-gray-600">
+              <i class="fa fa-angle-down"></i>
+            </button>
+          </div>
+          
+          <div class="pl-6 space-y-1">
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+              <i class="fa fa-circle-o text-xs text-gray-400"></i>
+              <span>供应商主数据</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+              <i class="fa fa-circle-o text-xs text-gray-400"></i>
+              <span>员工主数据</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+              <i class="fa fa-circle-o text-xs text-gray-400"></i>
+              <span>组织主数据</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm bg-primary/5 text-primary">
+              <i class="fa fa-circle text-xs"></i>
+              <span>审核管理</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+              <i class="fa fa-circle-o text-xs text-gray-400"></i>
+              <span>成品主数据</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+              <i class="fa fa-circle-o text-xs text-gray-400"></i>
+              <span>半成品主数据</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+              <i class="fa fa-circle-o text-xs text-gray-400"></i>
+              <span>其他主数据</span>
+            </a>
+          </div>
+          
+          <a href="#" class="flex items-center justify-between p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-500">
+                <i class="fa fa-cog"></i>
+              </div>
+              <span class="font-medium">系统配置</span>
+            </div>
+            <i class="fa fa-angle-right text-gray-400"></i>
+          </a>
+          
+          <a href="#" class="flex items-center justify-between p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-500">
+                <i class="fa fa-line-chart"></i>
+              </div>
+              <span class="font-medium">数据分析</span>
+            </div>
+            <i class="fa fa-angle-right text-gray-400"></i>
+          </a>
+          
+          <a href="#" class="flex items-center justify-between p-2 rounded-md text-sm hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-500">
+                <i class="fa fa-history"></i>
+              </div>
+              <span class="font-medium">操作日志</span>
+            </div>
+            <i class="fa fa-angle-right text-gray-400"></i>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="flex-1 overflow-y-auto bg-gray-50 p-4">
+      <!-- 面包屑导航 -->
+      <div class="flex items-center text-sm mb-4">
+        <a href="#" class="text-primary hover:underline">主数据管理</a>
+        <i class="fa fa-angle-right mx-2 text-gray-400"></i>
+        <a href="#" class="text-primary hover:underline">组织主数据</a>
+        <i class="fa fa-angle-right mx-2 text-gray-400"></i>
+        <span class="text-gray-600">审核管理</span>
+      </div>
+      
+      <div class="mb-4">
+        <h1 class="text-[clamp(1.25rem,2vw,1.5rem)] font-semibold">组织主数据审核管理</h1>
+        <p class="text-gray-500 text-sm">管理和处理组织主数据的审核请求</p>
+      </div>
+      
+      <!-- 筛选区域 -->
+      <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">主数据类型</label>
+            <select class="w-full p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+              <option value="">全部</option>
+              <option value="supplier">供应商</option>
+              <option value="employee">员工</option>
+              <option value="organization" selected>组织</option>
+              <option value="product">成品</option>
+              <option value="semi-product">半成品</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">数据编码</label>
+            <input type="text" class="w-full p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="输入编码搜索">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">审核状态</label>
+            <select class="w-full p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+              <option value="">全部</option>
+              <option value="pending" selected>待审核</option>
+              <option value="approved">已通过</option>
+              <option value="rejected">已驳回</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">提交时间</label>
+            <div class="flex space-x-2">
+              <input type="date" class="flex-1 p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+              <span class="flex items-center text-gray-500">至</span>
+              <input type="date" class="flex-1 p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">提交人</label>
+            <input type="text" class="w-full p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="输入提交人姓名">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">审核人</label>
+            <input type="text" class="w-full p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="输入审核人姓名">
+          </div>
+        </div>
+        
+        <div class="flex justify-end mt-4 space-x-2">
+          <button class="px-4 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors btn-hover">
+            <i class="fa fa-refresh mr-1"></i>重置
+          </button>
+          <button class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors btn-hover">
+            <i class="fa fa-search mr-1"></i>搜索
+          </button>
+        </div>
+      </div>
+      
+      <!-- 工具栏 -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors btn-hover">
+            <i class="fa fa-check-circle mr-1"></i>批量通过
+          </button>
+          <button class="px-4 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors btn-hover">
+            <i class="fa fa-times-circle mr-1"></i>批量驳回
+          </button>
+        </div>
+        
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors btn-hover">
+            <i class="fa fa-upload mr-1"></i>导入
+          </button>
+          <button class="px-4 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors btn-hover">
+            <i class="fa fa-download mr-1"></i>导出
+          </button>
+        </div>
+      </div>
+      
+      <!-- 表格区域 -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div class="flex items-center">
+                    <input type="checkbox" class="rounded text-primary focus:ring-primary/50">
+                  </div>
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">主数据类型</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">编码</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提交人</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提交时间</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">审核状态</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr class="table-row-hover">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary/50">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                      <i class="fa fa-building-o"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">组织</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">O004</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">销售部</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">张三</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">2025-06-08 14:30</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    待审核
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <button class="text-primary hover:text-primary/80 transition-colors" title="查看详情">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="text-success hover:text-success/80 transition-colors" title="通过">
+                      <i class="fa fa-check-circle"></i>
+                    </button>
+                    <button class="text-danger hover:text-danger/80 transition-colors" title="驳回">
+                      <i class="fa fa-times-circle"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+              <tr class="table-row-hover">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary/50">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                      <i class="fa fa-building-o"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">组织</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">O005</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">财务部</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">李四</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">2025-06-07 09:15</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    已驳回
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <button class="text-primary hover:text-primary/80 transition-colors" title="查看详情">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="text-success hover:text-success/80 transition-colors" title="重新审核">
+                      <i class="fa fa-refresh"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+              <tr class="table-row-hover">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary/50">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                      <i class="fa fa-building-o"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">组织</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">O006</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">人力资源部</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">王五</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">2025-06-05 16:45</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    待审核
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <button class="text-primary hover:text-primary/80 transition-colors" title="查看详情">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="text-success hover:text-success/80 transition-colors" title="通过">
+                      <i class="fa fa-check-circle"></i>
+                    </button>
+                    <button class="text-danger hover:text-danger/80 transition-colors" title="驳回">
+                      <i class="fa fa-times-circle"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+              <tr class="table-row-hover">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary/50">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                      <i class="fa fa-building-o"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">组织</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">O007</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">行政部</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">赵六</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">2025-06-03 11:20</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    已通过
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <button class="text-primary hover:text-primary/80 transition-colors" title="查看详情">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+              <tr class="table-row-hover">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary/50">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                      <i class="fa fa-building-o"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">组织</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">O008</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">法务部</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">钱七</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">2025-06-02 15:05</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    已通过
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <button class="text-primary hover:text-primary/80 transition-colors" title="查看详情">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- 分页 -->
+        <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p class="text-sm text-gray-700">
+                显示第 <span class="font-medium">1</span> 至 <span class="font-medium">5</span> 条，共 <span class="font-medium">12</span> 条记录
+              </p>
+            </div>
+            <div>
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  <span class="sr-only">上一页</span>
+                  <i class="fa fa-chevron-left text-xs"></i>
+                </a>
+                <a href="#" aria-current="page" class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
+                  1
+                </a>
+                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                  2
+                </a>
+                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                  3
+                </a>
+                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  <span class="sr-only">下一页</span>
+                  <i class="fa fa-chevron-right text-xs"></i>
+                </a>
+              </nav>
+            </div>
+          </div>
+          
+          <div class="flex sm:hidden items-center">
+            <p class="text-sm text-gray-700 mr-2">
+              第 <span class="font-medium">1</span> 页，共 <span class="font-medium">3</span> 页
+            </p>
+            <div class="flex space-x-2">
+              <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 bg-white">
+                <i class="fa fa-chevron-left text-xs"></i>
+              </button>
+              <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 bg-white">
+                <i class="fa fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 侧边栏切换
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('w-64');
+      sidebar.classList.toggle('w-0');
+    });
+    
+    // 表格行点击效果
+    document.querySelectorAll('tbody tr').forEach(row => {
+      row.addEventListener('click', function(e) {
+        // 如果点击的是复选框或按钮，不触发行选中
+        if (e.target.type === 'checkbox' || e.target.closest('button')) {
+          return;
+        }
+        
+        // 切换选中状态
+        const checkbox = this.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+      });
+    });
+    
+    // 模拟按钮点击效果
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', function() {
+        // 添加点击效果
+        this.classList.add('scale-95');
+        setTimeout(() => {
+          this.classList.remove('scale-95');
+        }, 150);
+        
+        // 这里可以添加实际的业务逻辑
+        console.log(`Button clicked: ${this.textContent.trim() || this.title}`);
+        
+        // 审核操作的模拟逻辑
+        if (this.title === '通过' || this.title === '驳回' || this.title === '重新审核') {
+          // 显示审核对话框（实际项目中可使用模态框）
+          const action = this.title;
+          const dataId = this.closest('tr').querySelector('td:nth-child(3)').textContent;
+          const dataName = this.closest('tr').querySelector('td:nth-child(4)').textContent;
+          
+          // 模拟审核对话框
+          if (confirm(`确定要${action} "${dataName}" (${dataId}) 吗？`)) {
+            // 模拟API请求
+            console.log(`模拟${action}请求:`, { dataId, dataName, action });
+            alert(`${action}成功！`);
+            // 刷新页面或更新列表（实际项目中）
+          }
+        }
+        
+        // 查看详情的模拟逻辑
+        if (this.title === '查看详情') {

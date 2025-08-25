@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新建分类 - 主数据管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边导航 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-left: calc(var(--sidebar-width) + 20px);
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a9c;
+            border-color: #1e5a9c;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            font-size: 0.85rem;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 50px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .model-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #dee2e6;
+        }
+        
+        .form-builder {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .components-panel {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-right: 20px;
+        }
+        
+        .form-canvas {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            min-height: 500px;
+        }
+        
+        .form-component {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: move;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+        
+        .form-component:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .form-field {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+            position: relative;
+        }
+        
+        .form-field:hover {
+            border-color: var(--accent);
+        }
+        
+        .form-field .field-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .form-field:hover .field-actions {
+            opacity: 1;
+        }
+        
+        .badge-light-primary {
+            background-color: rgba(44, 111, 187, 0.1);
+            color: var(--primary);
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .template-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(44, 111, 187, 0.05);
+        }
+        
+        .template-card h5 {
+            margin-bottom: 10px;
+        }
+        
+        .template-meta {
+            display: flex;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .template-meta span {
+            margin-right: 15px;
+        }
+        
+        .template-tags {
+            margin-top: 10px;
+        }
+        
+        .template-tags .badge {
+            margin-right: 5px;
+        }
+        
+        .field-properties {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .field-property {
+            margin-bottom: 15px;
+        }
+        
+        .field-property label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .rule-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rule-title {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .rule-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        
+        .rule-content {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .preview-field {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                padding-left: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="text-center mb-0"><i class="fas fa-database me-2"></i><span class="nav-text">主数据平台</span></h5>
+            </div>
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cube"></i>
+                        <span class="nav-text">主数据管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-sitemap"></i>
+                        <span class="nav-text">模型管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">编码管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">数据质量</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="nav-text">数据分发</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h2 class="page-title"><i class="fas fa-folder-plus me-2 text-primary"></i>新建分类</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">主数据管理</a></li>
+                            <li class="breadcrumb-item"><a href="#">模型管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">新建分类</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-save me-2"></i>保存草稿
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-rocket me-2"></i>发布分类
+                    </button>
+                </div>
+            </div>
+
+            <!-- 步骤指示器 -->
+            <div class="stepper">
+                <div class="step completed">
+                    <div class="step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-label">分类基本信息</div>
+                </div>
+                <div class="step active">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">分类属性</div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <div class="step-label">关联配置</div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">4</div>
+                    <div class="step-label">预览与完成</div>
+                </div>
+            </div>
+
+            <!-- 分类基本信息步骤 -->
+            <div class="step-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">分类基本信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">分类名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="请输入分类名称">
+                            <small class="text-muted">例如：供应商分类、客户分类等</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类编码 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="请输入分类编码">
+                            <small class="text-muted">建议采用简短的字母和数字组合</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类描述</label>
+                            <textarea class="form-control" rows="3" placeholder="请输入分类的详细描述信息"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">所属领域 <span class="text-danger">*</span></label>
+                            <select class="form-select">
+                                <option value="">请选择分类领域</option>
+                                <option>业务领域</option>
+                                <option>主题领域</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">上级分类</label>
+                            <select class="form-select">
+                                <option value="">顶级分类</option>
+                                <option>一级分类1</option>
+                                <option>一级分类2</option>
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-secondary me-2" id="prevStepBtn">上一步</button>
+                            <button class="btn btn-primary" id="nextStepBtn">下一步</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分类属性步骤 -->
+            <div class="step-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">分类属性配置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">分类负责人</label>
+                            <input type="text" class="form-control" placeholder="请输入负责人姓名">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">联系方式</label>
+                            <input type="text" class="form-control" placeholder="请输入联系邮箱或电话">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类状态 <span class="text-danger">*</span></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="categoryStatus" id="activeStatus" checked>
+                                    <label class="form-check-label" for="activeStatus">启用</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="categoryStatus" id="inactiveStatus">
+                                    <label class="form-check-label" for="inactiveStatus">禁用</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类标签</label>
+                            <div>
+                                <input type="text" class="form-control" placeholder="输入标签后按回车键添加" style="width: 300px; display: inline-block;">
+                                <div class="d-flex flex-wrap mt-2">
+                                    <span class="badge bg-light text-dark me-2 mb-2">供应商</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">客户</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">产品</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">组织</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-secondary me-2" id="prevStepBtn2">上一步</button>
+                            <button class="btn btn-primary" id="nextStepBtn2">下一步</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 关联配置步骤 -->
+            <div class="step-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">关联配置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">关联模型</label>
+                            <select class="form-select" multiple>
+                                <option>供应商模型</option>
+                                <option>客户模型</option>
+                                <option>产品模型</option>
+                                <option>组织模型</option>
+                            </select>
+                            <small class="text-muted mt-2 d-block">选择与此分类关联的主数据模型</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">关联字段</label>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>模型名称</th>
+                                            <th>字段名称</th>
+                                            <th>关联方式</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商模型</td>
+                                            <td>
+                                                <select class="form-select">
+                                                    <option>供应商名称</option>
+                                                    <option>供应商编码</option>
+                                                    <option>统一信用代码</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-select">
+                                                    <option>直接关联</option>
+                                                    <option>间接关联</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-secondary me-2" id="prevStepBtn3">上一步</button>
+                            <button class="btn btn-primary" id="nextStepBtn3">下一步</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预览与完成步骤 -->
+            <div class="step-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">预览与完成</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="mb-4">分类预览</h5>
+                        <div class="preview-card">
+                            <h5 class="mb-3">供应商分类</h5>
+                            <div class="preview-field">
+                                <div class="preview-label">分类编码</div>
+                                <div class="preview-value">CATEGORY_SUPPLIER</div>
+                            </div>
+                            <div class="preview-field">
+                                <div class="preview-label">所属领域</div>
+                                <div class="preview-value">业务领域</div>
+                            </div>
+                            <div class="preview-field">
+                                <div class="preview-label">上级分类</div>
+                                <div class="preview-value">顶级分类</div>
+                            </div>
+                            <div class="preview-field">
+                                <div class="preview-label">分类负责人</div>
+                                <div class="preview-value">张经理</div>
+                            </div>
+                            <div class="preview-field">
+                                <div class="preview-label">联系方式</div>
+                                <div class="preview-value">zhang@example.com</div>
+                            </div>
+                            <div class="preview-field">
+                                <div class="preview-label">关联模型</div>
+                                <div class="preview-value">供应商模型</div>
+                            </div>
+                        </div>
+                        <div class="text-end mt-4">
+                            <button class="btn btn-outline-secondary me-2" id="prevStepBtn4">上一步</button>
+                            <button class="btn btn-primary" id="finishBtn">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 步骤导航控制
+            const steps = document.querySelectorAll('.step');
+            const stepContents = document.querySelectorAll('.step-content');
+            
+            // 上一步按钮点击事件
+            document.getElementById('prevStepBtn').addEventListener('click', function() {
+                setActiveStep(0);
+            });
+            
+            document.getElementById('prevStepBtn2').addEventListener('click', function() {
+                setActiveStep(1);
+            });
+            
+            document.getElementById('prevStepBtn3').addEventListener('click', function() {
+                setActiveStep(2);
+            });
+            
+            document.getElementById('prevStepBtn4').addEventListener('click', function() {
+                setActiveStep(3);
+            });
+            
+            // 下一步按钮点击事件
+            document.getElementById('nextStepBtn').addEventListener('click', function() {
+                setActiveStep(1);
+            });
+            
+            document.getElementById('nextStepBtn2').addEventListener('click', function() {
+                setActiveStep(2);
+            });
+            
+            document.getElementById('nextStepBtn3').addEventListener('click', function() {
+                setActiveStep(3);
+            });
+            
+            // 完成按钮点击事件
+            document.getElementById('finishBtn').addEventListener('click', function() {
+                alert('分类创建成功！');
+            });
+            
+            // 设置活动步骤
+            function setActiveStep(index) {
+                steps.forEach((step, i) => {
+                    if (i <= index) {
+                        step.classList.remove('active');
+                        if (i < index) {
+                            step.classList.add('completed');
+                        } else {
+                            step.classList.remove('completed');
+                        }
+                    } else {
+                        step.classList.remove('active', 'completed');
+                    }
+                });
+                
+                stepContents.forEach((content, i) => {
+                    content.classList.remove('active');
+                    if (i === index) {
+                        content.classList.add('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分发管理 - 主数据管理系统</title>
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边导航 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-left: calc(var(--sidebar-width) + 20px);
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a9c;
+            border-color: #1e5a9c;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            font-size: 0.85rem;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 50px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .model-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #dee2e6;
+        }
+        
+        .form-builder {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .components-panel {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-right: 20px;
+        }
+        
+        .form-canvas {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            min-height: 500px;
+        }
+        
+        .form-component {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: move;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+        
+        .form-component:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .form-field {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+            position: relative;
+        }
+        
+        .form-field:hover {
+            border-color: var(--accent);
+        }
+        
+        .form-field .field-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .form-field:hover .field-actions {
+            opacity: 1;
+        }
+        
+        .badge-light-primary {
+            background-color: rgba(44, 111, 187, 0.1);
+            color: var(--primary);
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .template-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(44, 111, 187, 0.05);
+        }
+        
+        .template-card h5 {
+            margin-bottom: 10px;
+        }
+        
+        .template-meta {
+            display: flex;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .template-meta span {
+            margin-right: 15px;
+        }
+        
+        .template-tags {
+            margin-top: 10px;
+        }
+        
+        .template-tags .badge {
+            margin-right: 5px;
+        }
+        
+        .field-properties {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .field-property {
+            margin-bottom: 15px;
+        }
+        
+        .field-property label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .rule-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rule-title {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .rule-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        
+        .rule-content {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .preview-field {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                padding-left: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="text-center mb-0"><i class="fas fa-database me-2"></i><span class="nav-text">主数据平台</span></h5>
+            </div>
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cube"></i>
+                        <span class="nav-text">主数据管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-sitemap"></i>
+                        <span class="nav-text">模型管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">编码管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">数据质量</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="nav-text">数据分发</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h2 class="page-title"><i class="fas fa-share-alt me-2 text-primary"></i>数据分发管理</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">主数据管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">数据分发</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="search-box me-3">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" placeholder="搜索分发任务...">
+                    </div>
+                    <button class="btn btn-primary" onClick="window.open('mdm_ff_addffrw.html')">
+                        <i class="fas fa-plus me-2"></i>新建分发任务
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 库表推送分发 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-database me-2 text-primary"></i>库表推送分发</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary" onClick="window.open('mdm-新建库表推送任务.html')"><i class="fas fa-plus me-1"></i>新建任务</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 150px;">
+                                        <option>所有状态</option>
+                                        <option>运行中</option>
+                                        <option>已停止</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 150px;">
+                                        <option>默认排序</option>
+                                        <option>按名称</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>任务名称</th>
+                                            <th>目标系统</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商数据推送任务</td>
+                                            <td>ERP系统</td>
+                                            <td><span class="status-badge status-active">运行中</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">停止</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户数据推送任务</td>
+                                            <td>CRM系统</td>
+                                            <td><span class="status-badge status-active">运行中</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">停止</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品数据推送任务</td>
+                                            <td>WMS系统</td>
+                                            <td><span class="status-badge status-inactive">已停止</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">启动</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>组织架构推送任务</td>
+                                            <td>OA系统</td>
+                                            <td><span class="status-badge status-active">运行中</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">停止</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 接口分发 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-plug me-2 text-primary"></i>接口分发</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary"  onClick="window.open('mdm-新建接口分发任务.html')"><i class="fas fa-plus me-1"></i>新建接口</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 150px;">
+                                        <option>所有状态</option>
+                                        <option>启用</option>
+                                        <option>禁用</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 150px;">
+                                        <option>默认排序</option>
+                                        <option>按名称</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>接口名称</th>
+                                            <th>接口路径</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商查询接口</td>
+                                            <td>/api/supplier/search</td>
+                                            <td><span class="status-badge status-active">启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户新增接口</td>
+                                            <td>/api/customer/create</td>
+                                            <td><span class="status-badge status-active">启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品修改接口</td>
+                                            <td>/api/product/update</td>
+                                            <td><span class="status-badge status-inactive">禁用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">启用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>组织架构查询接口</td>
+                                            <td>/api/organization/search</td>
+                                            <td><span class="status-badge status-active">启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- 消息队列推送 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-rss me-2 text-primary"></i>消息队列推送</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary" onClick="window.open('mdm-新建消息队列推送任务.html')"><i class="fas fa-plus me-1"></i>新建任务</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 150px;">
+                                        <option>所有状态</option>
+                                        <option>运行中</option>
+                                        <option>已停止</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 150px;">
+                                        <option>默认排序</option>
+                                        <option>按名称</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>任务名称</th>
+                                            <th>消息队列</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商变更通知</td>
+                                            <td>RabbitMQ - SupplierQueue</td>
+                                            <td><span class="status-badge status-active">运行中</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">停止</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户新增通知</td>
+                                            <td>Kafka - CustomerTopic</td>
+                                            <td><span class="status-badge status-active">运行中</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">停止</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品下架通知</td>
+                                            <td>ActiveMQ - ProductQueue</td>
+                                            <td><span class="status-badge status-inactive">已停止</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">启动</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>组织变更通知</td>
+                                            <td>RabbitMQ - OrgQueue</td>
+                                            <td><span class="status-badge status-active">运行中</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">停止</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 主数据接口 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-code me-2 text-primary"></i>主数据接口</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary" onClick="window.open('mdm-新建主数据接口分发任务.html')" >
+										<i class="fas fa-plus me-1"></i>新建接口</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 150px;">
+                                        <option>所有类型</option>
+                                        <option>查询接口</option>
+                                        <option>新增接口</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 150px;">
+                                        <option>默认排序</option>
+                                        <option>按名称</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>接口名称</th>
+                                            <th>接口类型</th>
+                                            <th>接口路径</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商查询接口</td>
+                                            <td>查询</td>
+                                            <td>/api/supplier/search</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户新增接口</td>
+                                            <td>新增</td>
+                                            <td>/api/customer/create</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品修改接口</td>
+                                            <td>修改</td>
+                                            <td>/api/product/update</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>组织架构查询接口</td>
+                                            <td>查询</td>
+                                            <td>/api/organization/search</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">测试</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h5 class="mb-3">接口调用示例</h5>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <strong>供应商查询接口</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">请求方法</label>
+                                            <code>GET</code>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">请求路径</label>
+                                            <code>/api/supplier/search</code>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">请求参数</label>
+                                            <pre><code>{
+  "name": "供应商名称",
+  "code": "供应商编码"
+}</code></pre>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">响应示例</label>
+                                            <pre><code>{
+  "data": [
+    {
+      "id": "SUP-20231015-0001",
+      "name": "北京卓越科技有限公司",
+      "code": "91110105MA04FK8260"
+    }
+  ],
+  "total": 1
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 工作流管理 -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-tasks me-2 text-primary"></i>工作流管理</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-history me-1"></i>历史工作流</button>
+                        <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>新建工作流</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#workflow-list" data-bs-toggle="tab">工作流列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#workflow-design" data-bs-toggle="tab">工作流设计</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="workflow-list">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>工作流名称</th>
+                                            <th>类型</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商数据变更审批</td>
+                                            <td>审批流程</td>
+                                            <td><span class="status-badge status-active">启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">禁用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户数据新增审批</td>
+                                            <td>审批流程</td>
+                                            <td><span class="status-badge status-active">启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">禁用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品数据分发流程</td>
+                                            <td>分发流程</td>
+                                            <td><span class="status-badge status-inactive">禁用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">详情</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">启用</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="workflow-design">
+                            <div class="form-builder">
+                                <div class="components-panel">
+                                    <h6 class="fw-bold mb-3">流程组件</h6>
+                                    <div class="form-component">
+                                        <i class="fas fa-user me-2"></i>审批节点
+                                    </div>
+                                    <div class="form-component">
+                                        <i class="fas fa-clipboard-check me-2"></i>审核节点
+                                    </div>
+                                    <div class="form-component">
+                                        <i class="fas fa-exclamation-circle me-2"></i>决策节点
+                                    </div>
+                                    <div class="form-component">
+                                        <i class="fas fa-server me-2"></i>系统任务
+                                    </div>
+                                    <div class="form-component">
+                                        <i class="fas fa-repeat me-2"></i>循环节点
+                                    </div>
+                                </div>
+                                
+                                <div class="form-canvas">
+                                    <h5 class="mb-4">拖拽构建工作流</h5>
+                                    
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>从左侧拖拽节点到此处构建工作流
+                                    </div>
+                                    
+                                    <div style="min-height: 300px; border: 1px dashed #ccc; border-radius: 8px; padding: 20px;">
+                                        <!-- 工作流画布 -->
+                                    </div>
+                                    
+                                    <div class="text-end mt-4">
+                                        <button class="btn btn-light me-2"><i class="fas fa-plus-circle me-1"></i>添加节点</button>
+                                        <button class="btn btn-outline-primary"><i class="fas fa-link me-1"></i>连接节点</button>
+                                        <button class="btn btn-primary mt-3"><i class="fas fa-save me-1"></i>保存工作流</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 表单组件可拖拽效果
+            const components = document.querySelectorAll('.form-component');
+            components.forEach(component => {
+                component.setAttribute('draggable', 'true');
+                component.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', component.textContent.trim());
+                });
+            });
+            
+            // 表单区域放置效果
+            const canvas = document.querySelector('.form-canvas');
+            if (canvas) {
+                canvas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#3a9dca';
+                });
+                
+                canvas.addEventListener('dragleave', () => {
+                    canvas.style.borderColor = '#ccc';
+                });
+                
+                canvas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#ccc';
+                    const componentName = e.dataTransfer.getData('text/plain');
+                    
+                    // 创建新字段
+                    const newField = document.createElement('div');
+                    newField.className = 'form-field mb-3';
+                    newField.innerHTML = `
+                        <div class="field-actions">
+                            <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <label class="form-label">${componentName}</label>
+                        <input type="text" class="form-control" placeholder="请输入${componentName}">
+                    `;
+                    
+                    canvas.insertBefore(newField, canvas.querySelector('.text-end'));
+                });
+                
+                // 简单的表单字段操作
+                canvas.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('fa-trash')) {
+                        const field = e.target.closest('.form-field');
+                        if (field) {
+                            field.remove();
+                        }
+                    }
+                });
+            }
+            
+            // 新建任务按钮点击事件
+            const newTaskBtn = document.querySelector('.btn-primary[onclick="window.open(\'mdm_mx_add.html\')"]');
+            if (newTaskBtn) {
+                newTaskBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('新建分发任务功能将在此打开新页面');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

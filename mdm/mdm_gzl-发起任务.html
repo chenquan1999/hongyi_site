@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发起任务</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #fff;
+      color: #333;
+    }
+
+    /* 顶部导航 */
+    .nav {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #333;
+      margin-right: 15px;
+    }
+
+    .nav .active {
+      font-weight: bold;
+    }
+
+    /* 搜索区域 */
+    .search-area {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 15px;
+      background-color: #fff;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .search-area input {
+      padding: 6px 10px;
+      margin-right: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+    }
+
+    .search-area button {
+      padding: 6px 15px;
+      background-color: #12b76a;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .search-area button:hover {
+      background-color: #0ca656;
+    }
+
+    /* 左侧分类树 */
+    .category-tree {
+      width: 200px;
+      float: left;
+      padding: 15px;
+    }
+
+    .category-tree ul {
+      list-style: none;
+    }
+
+    .category-tree li {
+      margin: 5px 0;
+      cursor: pointer;
+    }
+
+    .category-tree li:hover {
+      color: #12b76a;
+    }
+
+    /* 右侧表格区域 */
+    .table-container {
+      margin-left: 220px;
+      padding: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: #f8f9fa;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .operate a {
+      text-decoration: none;
+      color: #12b76a;
+      margin-right: 10px;
+      font-size: 12px;
+    }
+
+    .operate a:hover {
+      text-decoration: underline;
+    }
+
+    /* 分页区域 */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 15px;
+      background-color: #fff;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .pagination select {
+      padding: 4px;
+      margin-right: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+    }
+
+    .pagination a {
+      text-decoration: none;
+      color: #333;
+      margin: 0 5px;
+      padding: 4px 8px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+    }
+
+    .pagination a:hover {
+      background-color: #f8f9fa;
+    }
+
+    .pagination .active {
+      background-color: #12b76a;
+      color: #fff;
+      border: 1px solid #12b76a;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 顶部导航 -->
+  <div class="nav">
+    <a href="#" class="active">首页</a> /
+    <a href="#">任务管理</a> /
+    <a href="#">发起任务</a>
+  </div>
+
+  <!-- 搜索区域 -->
+  <div class="search-area">
+    <input type="text" placeholder="请输入分类名称" id="categoryName">
+    <input type="text" placeholder="请输入名称" id="name">
+    <button>搜索</button>
+    <button>重置</button>
+  </div>
+
+  <!-- 左侧分类树 -->
+  <div class="category-tree">
+    <ul>
+      <li>HR人事</li>
+      <ul>
+        <li>员工请假</li>
+        <li>人事调动</li>
+      </ul>
+      <li>财务</li>
+      <ul>
+        <li>采购审批</li>
+        <li>报销审批</li>
+      </ul>
+      <li>ISC</li>
+      <li>应用架构审批</li>
+      <ul>
+        <li>应用群</li>
+        <li>应用系统</li>
+        <li>应用架构(AD/AG/APP)1</li>
+      </ul>
+      <li>测试流程审批</li>
+      <ul>
+        <li>审批测试1</li>
+      </ul>
+    </ul>
+  </div>
+
+  <!-- 右侧表格区域 -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>流程编号</th>
+          <th>流程标识</th>
+          <th>流程名称</th>
+          <th>流程版本</th>
+          <th>部署时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1485041</td>
+          <td>flow_mIbeom2a_c1_c1</td>
+          <td>数据录入测试流程c</td>
+          <td>v1</td>
+          <td>2025-06-11 12:56:58</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1485037</td>
+          <td>flow_06tduju8</td>
+          <td>flow_mIbeom2a</td>
+          <td>v2</td>
+          <td>2025-06-11 12:54:48</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1485007</td>
+          <td>flow_06tduju8</td>
+          <td>flow_mIbeom2a</td>
+          <td>v1</td>
+          <td>2025-06-11 12:51:02</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1287509</td>
+          <td>flow_eaop_data_category_form_multiple</td>
+          <td>数据分类审核多选..</td>
+          <td>v2</td>
+          <td>2024-09-24 16:43:14</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1287501</td>
+          <td>flow_eaop_data_category_form</td>
+          <td>数据分类审核选择..</td>
+          <td>v1</td>
+          <td>2024-09-24 16:37:28</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1265009</td>
+          <td>flow_eaop_business_process_form_multiple</td>
+          <td>业务架构审核多选..</td>
+          <td>v2</td>
+          <td>2024-09-13 10:34:46</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1265005</td>
+          <td>flow_eaop_data_structure_form_multiple</td>
+          <td>数据架构审核多选..</td>
+          <td>v2</td>
+          <td>2024-09-13 10:34:08</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1265001</td>
+          <td>flow_eaop_org_form</td>
+          <td>组织架构审核选择..</td>
+          <td>v3</td>
+          <td>2024-09-13 10:33:08</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1255041</td>
+          <td>flow_review_eaop_l1</td>
+          <td>应用架构L1批量审核</td>
+          <td>v2</td>
+          <td>2024-09-12 11:56:02</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+        <tr>
+          <td>1250036</td>
+          <td>flow_review_eaop_l1</td>
+          <td>应用架构L1批量审核</td>
+          <td>v1</td>
+          <td>2024-09-12 10:17:03</td>
+          <td class="operate"><a href="#">发起任务</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 分页区域 -->
+  <div class="pagination">
+    <span>共 56 条</span>
+    <select name="pageSize" id="pageSize">
+      <option value="10">10条/页</option>
+      <option value="20">20条/页</option>
+      <option value="30">30条/页</option>
+    </select>
+    <a href="#" class="active">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="#">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">></a>
+    <span>前往</span>
+    <input type="text" name="pageNum" id="pageNum" value="1" style="width: 30px; text-align: center;">
+    <span>页</span>
+  </div>
+</body>
+
+</html>

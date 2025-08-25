@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据质量管理 - 规则设置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .app-container {
+            padding: 20px;
+        }
+        
+        /* 步骤导航栏 */
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            padding: 10px 20px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .step.active .step-number {
+            background-color: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        
+        .step-line {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: -1;
+        }
+        
+        .step.active + .step .step-line {
+            background-color: var(--primary);
+        }
+        
+        .step-text {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .step.active .step-text {
+            color: var(--primary);
+        }
+        
+        /* 表单样式 */
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .rule-item {
+            margin-bottom: 20px;
+        }
+        
+        .rule-item-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .rule-option {
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+        }
+        
+        /* 按钮样式 */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        .btn {
+            margin-left: 10px;
+        }
+        
+        /* 提示信息 */
+        .hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 步骤导航 -->
+        <div class="step-nav">
+            <div class="step active">
+                <div class="step-number">①</div>
+                <div class="step-text">L1-L5设置</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step active">
+                <div class="step-number">②</div>
+                <div class="step-text">规则定义</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step active">
+                <div class="step-number">③</div>
+                <div class="step-text">规则设置</div>
+            </div>
+        </div>
+        
+        <!-- 表单内容 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="form-section">
+                    <div class="form-section-title">规则设置</div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="form-section-title">执行过程质量规则</div>
+                    
+                    <div class="rule-item">
+                        <div class="rule-item-title">1.完整性</div>
+                        <div class="rule-option">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="completeness" id="completeness1" checked>
+                                <label class="form-check-label" for="completeness1">空值分析 总记录数/空值数量/空值百分比</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rule-item">
+                        <div class="rule-item-title">2.及时性</div>
+                        <div class="rule-option">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="timeliness" id="timeliness1">
+                                <label class="form-check-label" for="timeliness1">记录时间区间记录数</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="timeliness" id="timeliness2" checked>
+                                <label class="form-check-label" for="timeliness2">高于最大值减F-DT/F-NO</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="timeliness" id="timeliness3">
+                                <label class="form-check-label" for="timeliness3">低于最小值域F-DT/F-NO</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">预设允许值</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="">
+                                <span class="input-group-text">到</span>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rule-item">
+                        <div class="rule-item-title">3.一致性</div>
+                        <div class="rule-option">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="consistency" id="consistency1" checked>
+                                <label class="form-check-label" for="consistency1">编码一致性F-NO/F-CH/主外键约束</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">选择关联表格：</label>
+                            <select class="form-select">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">选择关联字段：</label>
+                            <select class="form-select">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-check form-check-inline mt-3">
+                            <input class="form-check-input" type="radio" name="ruleConstraint" id="ruleConstraint1">
+                            <label class="form-check-label" for="ruleConstraint1">跨实体约束规则</label>
+                        </div>
+                        <button class="btn btn-outline-secondary ms-2">实体配置</button>
+                    </div>
+                </div>
+                
+                <!-- 按钮区域 -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary"><i class="fas fa-step-backward me-1"></i>上一步</button>
+                    <button class="btn btn-primary" onClick=" window.open('mdm_数据质量-主数据质量规则-3.html', '_blank')"><i class="fas fa-step-forward me-1"></i>下一步</button>
+                    <button class="btn btn-danger"><i class="fas fa-times me-1"></i>关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 提示信息 -->
+        <div class="hint">
+            <i class="fas fa-info-circle me-1"></i>提示：当鼠标悬浮在字段名上时，可以查看字段名的解释信息！
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

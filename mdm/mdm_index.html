@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主数据管理系统</title>
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link rel="./all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边导航 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 15px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 10px 15px;
+            margin: 4px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .submenu {
+            margin-left: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .submenu-link {
+            color: rgba(255,255,255,0.6);
+            padding: 6px 15px 6px 25px;
+            margin: 2px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: block;
+            text-decoration: none;
+        }
+        
+        .submenu-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 15px;
+            padding-left: calc(var(--sidebar-width) + 15px);
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+            font-size: 1.4rem;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 12px 15px;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0 !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a9c;
+            border-color: #1e5a9c;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+        
+        .action-btn {
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin: 0 2px;
+            font-size: 0.8rem;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 280px;
+        }
+        
+        .search-box input {
+            padding-left: 35px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .table {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8fafc;
+            padding: 8px 10px;
+        }
+        
+        .table td {
+            padding: 8px 10px;
+            vertical-align: middle;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .category-tree {
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+        
+        .tree-node {
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .tree-children {
+            padding-left: 20px;
+        }
+        
+        .badge-light-primary {
+            background-color: rgba(44, 111, 187, 0.1);
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        
+        .pagination {
+            margin-bottom: 0;
+        }
+        
+        .page-item .page-link {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #495057;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .form-control, .form-select {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .tab-content {
+            padding-top: 10px;
+        }
+        
+        /* 紧凑布局调整 */
+        .row {
+            margin-left: -8px;
+            margin-right: -8px;
+        }
+        
+        .row > [class*="col-"] {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        
+        .mb-3 {
+            margin-bottom: 12px !important;
+        }
+        
+        .mb-4 {
+            margin-bottom: 16px !important;
+        }
+        
+        .me-2 {
+            margin-right: 8px !important;
+        }
+        
+        .me-3 {
+            margin-right: 12px !important;
+        }
+        
+        .ms-1 {
+            margin-left: 4px !important;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                padding-left: 85px;
+                padding-right: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header > div:last-child {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                max-width: 100%;
+                flex-grow: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .card-header > div:last-child {
+                margin-top: 8px;
+            }
+            
+            .d-flex.justify-content-between {
+                flex-direction: column;
+            }
+            
+            .d-flex.justify-content-between > div {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="text-center mb-0"><i class="fas fa-database me-2"></i><span class="nav-text">主数据平台</span></h5>
+            </div>
+            <ul class="nav flex-column mt-2">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mdm_主数据管理.html" target="_blank">
+                        <i class="fas fa-cube"></i>
+                        <span class="nav-text">主数据管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mdm_mxgl.html" target="_blank">
+                        <i class="fas fa-sitemap"></i>
+                        <span class="nav-text">模型管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mdm_bmgl.html" target="_blank">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">编码管理</span>
+                    </a>
+                </li>
+                <li class="nav-gzlc">
+                    <a class="nav-link" href="#" target="_blank">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">流程管理</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="mdm_gzl-流程设计.html" target="_blank" class="submenu-link"><i class="fas fa-chart-pie me-2"></i>流程设计</a>
+                        <a href="mdm_gzl-流程分类.html" target="_blank" class="submenu-link"><i class="fas fa-cogs me-2"></i>流程分类</a>
+                        <a href="#" class="submenu-link"><i class="fas fa-file-alt me-2"></i>流程监听</a>
+                        <a href="mdm_gzl-发起任务.html" target="_blank" class="submenu-link"><i class="fas fa-tasks me-2"></i>发起任务</a>
+                        <a href="mdm_gzl-代办任务.html" target="_blank" class="submenu-link"><i class="fas fa-tasks me-2"></i>代办任务</a>
+                        <a href="mdm_gzl-已办任务.html" target="_blank" class="submenu-link"><i class="fas fa-tasks me-2"></i>已办任务</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">数据质量</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="mdm-质量规则概览.html" target="_blank" class="submenu-link"><i class="fas fa-chart-pie me-2"></i>规则概览</a>
+                        <a href="mdm_数据质量-主数据质量规则.html" target="_blank" class="submenu-link"><i class="fas fa-cogs me-2"></i>主数据质量规则</a>
+                        <a href="mdm_数据质量-质量报告.html" target="_blank" class="submenu-link"><i class="fas fa-file-alt me-2"></i>质量报告</a>
+                        <a href="mdm-质量-任务调度.html" target="_blank" class="submenu-link"><i class="fas fa-tasks me-2"></i>调度管理</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mdm_ff.html" target="_blank">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="nav-text">数据分发</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h2 class="page-title"><i class="fas fa-sitemap me-2 text-primary"></i>主数据模型管理</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">主数据管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">模型管理</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="search-box me-2">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" placeholder="搜索模型...">
+                    </div>
+                    <button class="btn btn-primary" onclick="window.open('mdm_mx_add.html')">
+                        <i class="fas fa-plus me-1"></i>新建模型
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 模板库管理 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fas fa-layer-group me-2 text-primary"></i>模板库管理</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary ms-1"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary" onclick="window.open('mdm_mb_add.html')"><i class="fas fa-plus me-1"></i>新建模板</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 110px;">
+                                        <option>所有状态</option>
+                                        <option>已发布</option>
+                                        <option>草稿</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 110px;">
+                                        <option>最新优先</option>
+                                        <option>最旧优先</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>模板名称</th>
+                                            <th>类型</th>
+                                            <th>创建人</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商基础模型</td>
+                                            <td>供应商</td>
+                                            <td>张经理</td>
+                                            <td><span class="status-badge status-active">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户信息模型</td>
+                                            <td>客户</td>
+                                            <td>李主管</td>
+                                            <td><span class="status-badge status-active">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品分类模型</td>
+                                            <td>产品</td>
+                                            <td>王总监</td>
+                                            <td><span class="status-badge status-draft">草稿</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">发布</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>组织架构模型</td>
+                                            <td>组织</td>
+                                            <td>赵专员</td>
+                                            <td><span class="status-badge status-active">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <nav>
+                                <ul class="pagination justify-content-end mb-0">
+                                    <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分类管理 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fas fa-folder me-2 text-primary"></i>分类管理</span>
+                            <div>
+                                <button class="btn btn-sm btn-primary" onclick="window.open('mdm_fl_add.html')"><i class="fas fa-plus me-1"></i>新建分类</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <h6 class="fw-bold mb-0">分类体系</h6>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-expand me-1"></i>全部展开</button>
+                                        <button class="btn btn-sm btn-outline-secondary ms-1"><i class="fas fa-compress me-1"></i>全部折叠</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="category-tree">
+                                    <div class="tree-node">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fas fa-folder text-warning me-2"></i>
+                                                <strong>业务领域</strong>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-sm btn-link text-primary"><i class="fas fa-plus"></i></button>
+                                                <button class="btn btn-sm btn-link text-success"><i class="fas fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="tree-children">
+                                            <div class="tree-node">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i class="fas fa-folder text-warning me-2"></i>
+                                                        <span>供应链管理</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="badge badge-light-primary">12模型</span>
+                                                        <button class="btn btn-sm btn-link text-primary"><i class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tree-node">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i class="fas fa-folder text-warning me-2"></i>
+                                                        <span>客户关系</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="badge badge-light-primary">8模型</span>
+                                                        <button class="btn btn-sm btn-link text-primary"><i class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-node">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fas fa-folder text-warning me-2"></i>
+                                                <strong>主题领域</strong>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-sm btn-link text-primary"><i class="fas fa-plus"></i></button>
+                                                <button class="btn btn-sm btn-link text-success"><i class="fas fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="tree-children">
+                                            <div class="tree-node">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i class="fas fa-folder text-warning me-2"></i>
+                                                        <span>基础数据</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="badge badge-light-primary">24模型</span>
+                                                        <button class="btn btn-sm btn-link text-primary"><i class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tree-node">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i class="fas fa-folder text-warning me-2"></i>
+                                                        <span>交易数据</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="badge badge-light-primary">18模型</span>
+                                                        <button class="btn btn-sm btn-link text-primary"><i class="fas fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h6 class="fw-bold mb-2">模型统计</h6>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h5 class="mb-0">36</h5>
+                                                        <small class="text-muted">模型总数</small>
+                                                    </div>
+                                                    <div class="text-primary">
+                                                        <i class="fas fa-cubes"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="card bg-light">
+                                            <div class="card-body py-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h5 class="mb-0">28</h5>
+                                                        <small class="text-muted">已发布</small>
+                                                    </div>
+                                                    <div class="text-success">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 实体模型管理 -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <span><i class="fas fa-cube me-2 text-primary"></i>实体模型管理</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-history me-1"></i>版本历史</button>
+                        <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>新建模型</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="d-flex">
+                            <div class="me-2">
+                                <label class="form-label">模型状态</label>
+                                <select class="form-select form-select-sm">
+                                    <option>全部</option>
+                                    <option>已发布</option>
+                                    <option>草稿</option>
+                                    <option>已停用</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">业务领域</label>
+                                <select class="form-select form-select-sm">
+                                    <option>全部</option>
+                                    <option>供应链管理</option>
+                                    <option>客户关系</option>
+                                    <option>财务管理</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-end">
+                            <button class="btn btn-sm btn-outline-success me-2"><i class="fas fa-play-circle me-1"></i>发布模型</button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-ban me-1"></i>停用</button>
+                        </div>
+                    </div>
+                    
+                    <ul class="nav nav-tabs mb-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#model-config" data-bs-toggle="tab">模型配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#form-design" data-bs-toggle="tab">表单设计</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#rules" data-bs-toggle="tab">规则设置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#preview" data-bs-toggle="tab">预览</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="model-config">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <h5 class="mb-2">基础信息</h5>
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">模型名称 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control form-control-sm" value="供应商主数据模型">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">模型编码 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control form-control-sm" value="MDM-SUPPLIER">
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">描述信息</label>
+                                            <textarea class="form-control form-control-sm" rows="2">供应商主数据统一管理模型，包含供应商基本信息、资质信息、联系人信息等</textarea>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">所属分类</label>
+                                            <div class="d-flex">
+                                                <select class="form-select form-select-sm me-2">
+                                                    <option>业务领域</option>
+                                                    <option>主题领域</option>
+                                                </select>
+                                                <select class="form-select form-select-sm">
+                                                    <option>供应链管理</option>
+                                                    <option>客户关系</option>
+                                                    <option>财务管理</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 class="mb-2">编码规则</h5>
+                                        <div class="mb-2">
+                                            <label class="form-label">绑定编码规则</label>
+                                            <select class="form-select form-select-sm">
+                                                <option>SUPPLIER-CODE-2023</option>
+                                                <option>VENDOR-CODE-V1</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">编码示例</label>
+                                            <div class="alert alert-light py-2">
+                                                <code class="fs-sm">SUP-2023-00001</code>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h5 class="mb-2">字段管理</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th width="30"><input type="checkbox" class="form-check-input"></th>
+                                                    <th>字段名</th>
+                                                    <th>类型</th>
+                                                    <th>长度</th>
+                                                    <th>必填</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input type="checkbox" class="form-check-input"></td>
+                                                    <td>供应商编码</td>
+                                                    <td>字符串</td>
+                                                    <td>20</td>
+                                                    <td><i class="fas fa-check text-success"></i></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-link p-0 me-1"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-link p-0"><i class="fas fa-trash text-danger"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" class="form-check-input"></td>
+                                                    <td>供应商名称</td>
+                                                    <td>字符串</td>
+                                                    <td>100</td>
+                                                    <td><i class="fas fa-check text-success"></i></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-link p-0 me-1"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-link p-0"><i class="fas fa-trash text-danger"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" class="form-check-input"></td>
+                                                    <td>统一社会信用代码</td>
+                                                    <td>字符串</td>
+                                                    <td>18</td>
+                                                    <td><i class="fas fa-check text-success"></i></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-link p-0 me-1"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-link p-0"><i class="fas fa-trash text-danger"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" class="form-check-input"></td>
+                                                    <td>注册资金</td>
+                                                    <td>数字</td>
+                                                    <td>16,2</td>
+                                                    <td><i class="fas fa-times text-muted"></i></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-link p-0 me-1"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-link p-0"><i class="fas fa-trash text-danger"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-plus me-1"></i>新增字段</button>
+                                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="fas fa-trash me-1"></i>批量删除</button>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-up me-1"></i>上移</button>
+                                            <button class="btn btn-sm btn-outline-secondary ms-1"><i class="fas fa-arrow-down me-1"></i>下移</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./bootstrap.bundle.min.js"></script>
+</body>
+</html>

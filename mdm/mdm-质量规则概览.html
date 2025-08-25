@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据质量管理 - 规则概览</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --primary-light: #eef2fc;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            padding: 10px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .breadcrumb {
+            padding: 8px 0;
+            background-color: #fff;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb-item.active {
+            color: #6c757d;
+        }
+        
+        .stat-card {
+            background-color: #2196F3;
+            color: white;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-card-header {
+            font-weight: 600;
+        }
+        
+        .stat-card-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        
+        .stat-row > div {
+            flex: 1;
+            min-width: 200px;
+            padding: 0 15px;
+            margin-bottom: 15px;
+        }
+        
+        .table-container {
+            margin-top: 20px;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #fff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .pagination {
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .filter-row {
+            background-color: var(--primary-light);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-row select {
+            margin-right: 10px;
+            min-width: 150px;
+        }
+        
+        .filter-row button {
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .stat-row > div {
+                min-width: 100%;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-row select, .filter-row button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar navbar-light">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between w-100">
+                <div>
+                    <a class="navbar-brand" href="#"><i class="fas fa-home me-2"></i>数据质量管理平台</a>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">首页</a></li>
+                        <li class="breadcrumb-item"><a href="#">数据质量管理</a></li>
+                        <li class="breadcrumb-item active">规则概览</li>
+                    </ol>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            切换组织
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#">组织1</a></li>
+                            <li><a class="dropdown-item" href="#">组织2</a></li>
+                            <li><a class="dropdown-item" href="#">组织3</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            简体中文
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="#">简体中文</a></li>
+                            <li><a class="dropdown-item" href="#">English</a></li>
+                        </ul>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3"><i class="fas fa-bell text-primary me-2"></i><span class="badge bg-danger rounded-pill">19</span></span>
+                        <div class="input-group me-3" style="width: 200px;">
+                            <input type="text" class="form-control" placeholder="搜索">
+                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-expand"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-th"></i></button>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="#">个人中心</a></li>
+                                <li><a class="dropdown-item" href="#">设置</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">退出登录</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container-fluid" style="padding: 20px;">
+        <!-- 顶部标签 -->
+        <ul class="nav nav-tabs" id="ruleOverviewTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">规则概览</button>
+            </li>
+            <!-- 其他标签可在此处添加 -->
+        </ul>
+
+        <!-- 内容区 -->
+        <div class="tab-content" id="ruleOverviewTabContent">
+            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                <!-- 筛选条件 -->
+                <div class="filter-row">
+                    <div class="d-flex">
+                        <select class="form-select form-select-sm me-2">
+                            <option>全部主领域</option>
+                            <option>电信主题</option>
+                            <option>联通MYSQL</option>
+                        </select>
+                        <select class="form-select form-select-sm me-2">
+                            <option>全部主题</option>
+                            <option>销售</option>
+                            <option>设备</option>
+                        </select>
+                        <select class="form-select form-select-sm me-2">
+                            <option>全部业务对象</option>
+                            <option>销售员工</option>
+                            <option>节能设备</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-search me-1"></i>查询</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-sync-alt me-1"></i>重置</button>
+                        <button class="btn btn-sm btn-outline-success"><i class="fas fa-plus me-1"></i>新增规则</button>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="stat-row">
+                    <div>
+                        <div class="stat-card">
+                            <div class="stat-card-header">所有规则统计</div>
+                            <div class="stat-card-value">总规则数: 31</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stat-card">
+                            <div class="stat-card-header">当日规则新增统计</div>
+                            <div class="stat-card-value">新增规则: 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 规则详情表格 -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>主领域 <i class="fas fa-sort"></i></th>
+                                    <th>主题 <i class="fas fa-sort"></i></th>
+                                    <th>业务对象 <i class="fas fa-sort"></i></th>
+                                    <th>逻辑实体 <i class="fas fa-sort"></i></th>
+                                    <th>属性 <i class="fas fa-sort"></i></th>
+                                    <th>新增规则统计 <i class="fas fa-sort"></i></th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>电信主题(测试用例)</td>
+                                    <td>销售(测试用例)</td>
+                                    <td>销售员工(测试用例)</td>
+                                    <td>销售员工账号信息</td>
+                                    <td>修改日期</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>电信主题</td>
+                                    <td>销售</td>
+                                    <td>销售员工</td>
+                                    <td>销售员工基础信息</td>
+                                    <td>员工工号</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>联通MYSQL</td>
+                                    <td>设备</td>
+                                    <td>节能设备</td>
+                                    <td>节电设备表</td>
+                                    <td>设备名称</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>网关编码</td>
+                                    <td>6</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>电信主题(测试用例)</td>
+                                    <td>设备(测试用例2)</td>
+                                    <td>节能设备（测试）</td>
+                                    <td>节电设备信息（测试）</td>
+                                    <td>设备编码</td>
+                                    <td>6</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>数据时间</td>
+                                    <td>2</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>序号</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>电信主题(测试用例)</td>
+                                    <td>销售</td>
+                                    <td>销售员工</td>
+                                    <td>销售员工账号信息</td>
+                                    <td>员工工号</td>
+                                    <td>6</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>身份证号</td>
+                                    <td>3</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>邮箱地址</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 分页 -->
+                <div class="d-flex justify-content-end">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">上一页</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">下一页</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

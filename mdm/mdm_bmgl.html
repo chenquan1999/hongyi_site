@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编码管理 - 主数据管理系统</title>
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边导航 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-left: calc(var(--sidebar-width) + 20px);
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a9c;
+            border-color: #1e5a9c;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            font-size: 0.85rem;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 50px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .model-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #dee2e6;
+        }
+        
+        .form-builder {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .components-panel {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-right: 20px;
+        }
+        
+        .form-canvas {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            min-height: 500px;
+        }
+        
+        .form-component {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: move;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+        
+        .form-component:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .form-field {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+            position: relative;
+        }
+        
+        .form-field:hover {
+            border-color: var(--accent);
+        }
+        
+        .form-field .field-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .form-field:hover .field-actions {
+            opacity: 1;
+        }
+        
+        .badge-light-primary {
+            background-color: rgba(44, 111, 187, 0.1);
+            color: var(--primary);
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .template-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(44, 111, 187, 0.05);
+        }
+        
+        .template-card h5 {
+            margin-bottom: 10px;
+        }
+        
+        .template-meta {
+            display: flex;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .template-meta span {
+            margin-right: 15px;
+        }
+        
+        .template-tags {
+            margin-top: 10px;
+        }
+        
+        .template-tags .badge {
+            margin-right: 5px;
+        }
+        
+        .field-properties {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .field-property {
+            margin-bottom: 15px;
+        }
+        
+        .field-property label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .rule-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rule-title {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .rule-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        
+        .rule-content {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .preview-field {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                padding-left: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="text-center mb-0"><i class="fas fa-database me-2"></i><span class="nav-text">主数据平台</span></h5>
+            </div>
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cube"></i>
+                        <span class="nav-text">主数据管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-sitemap"></i>
+                        <span class="nav-text">模型管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">编码管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">数据质量</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="nav-text">数据分发</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h2 class="page-title"><i class="fas fa-barcode me-2 text-primary"></i>编码管理</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">主数据管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">编码管理</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="search-box me-3">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" placeholder="搜索编码规则...">
+                    </div>
+                    <button class="btn btn-primary" onclick="window.open('mdm_add_bmgz.html')">
+                        <i class="fas fa-plus me-2"></i>新建编码规则
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 编码规则列表 -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-list me-2 text-primary"></i>编码规则列表</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>新建规则</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 150px;">
+                                        <option>所有状态</option>
+                                        <option>已启用</option>
+                                        <option>已禁用</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 150px;">
+                                        <option>默认排序</option>
+                                        <option>名称升序</option>
+                                        <option>名称降序</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>规则名称</th>
+                                            <th>编码格式</th>
+                                            <th>当前值</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商编码规则</td>
+                                            <td>SUP-YYYYMMDD-NNNN</td>
+                                            <td>SUP-20231015-0001</td>
+                                            <td><span class="status-badge status-active">已启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户编码规则</td>
+                                            <td>CUS-YYYYMMDD-NNNN</td>
+                                            <td>CUS-20231015-0001</td>
+                                            <td><span class="status-badge status-active">已启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品编码规则</td>
+                                            <td>PROD-YYYYMMDD-NNNN</td>
+                                            <td>PROD-20231015-0001</td>
+                                            <td><span class="status-badge status-draft">已禁用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">启用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>员工编码规则</td>
+                                            <td>EMP-NNNNNN</td>
+                                            <td>EMP-000123</td>
+                                            <td><span class="status-badge status-active">已启用</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <nav>
+                                <ul class="pagination justify-content-end mb-0">
+                                    <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 编码统计与工具 -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-2 text-primary"></i>编码统计
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h5 class="mb-3">编码使用情况</h5>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted">已使用: 75%</small>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">12</h5>
+                                            <small class="text-muted">已启用规则</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">4</h5>
+                                            <small class="text-muted">已禁用规则</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">38</h5>
+                                            <small class="text-muted">总编码数量</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">15</h5>
+                                            <small class="text-muted">今日生成</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tools me-2 text-primary"></i>常用工具
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-code me-2 text-primary"></i>编码生成器
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">HOT</span>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-history me-2 text-primary"></i>编码使用历史
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-sync-alt me-2 text-primary"></i>编码同步工具
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-file-import me-2 text-primary"></i>批量导入导出
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-cogs me-2 text-primary"></i>系统参数配置
+                                </a>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h6 class="mb-3">快速生成编码</h6>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="选择规则类型">
+                                    <button class="btn btn-outline-secondary" type="button">生成</button>
+                                </div>
+                                <div class="alert alert-light" role="alert">
+                                    最近生成: SUP-20231015-0001
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 编码规则配置 -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-cogs me-2 text-primary"></i>编码规则配置</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-history me-1"></i>历史版本</button>
+                        <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>新建规则</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#rule-config" data-bs-toggle="tab">规则配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#rule-preview" data-bs-toggle="tab">规则预览</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#rule-log" data-bs-toggle="tab">使用日志</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="rule-config">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <h5 class="mb-3">基础信息</h5>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">规则名称 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" value="供应商编码规则">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">规则编码 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" value="RULE_SUPPLIER">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">规则描述</label>
+                                            <textarea class="form-control" rows="3">供应商主数据编码规则，包含前缀、日期和流水号。</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">关联模型</label>
+                                            <select class="form-select">
+                                                <option>供应商模型</option>
+                                                <option>客户模型</option>
+                                                <option>产品模型</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 class="mb-3">编码格式配置</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">编码格式 <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">SUP-</span>
+                                                <select class="form-select">
+                                                    <option>YYYYMMDD</option>
+                                                    <option>YYYYMM</option>
+                                                    <option>YYMMDD</option>
+                                                </select>
+                                                <span class="input-group-text">-</span>
+                                                <input type="text" class="form-control" value="NNNN">
+                                            </div>
+                                            <small class="text-muted mt-2 d-block">示例：SUP-20231015-0001</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">流水号位数 <span class="text-danger">*</span></label>
+                                            <select class="form-select">
+                                                <option>4位</option>
+                                                <option>3位</option>
+                                                <option>5位</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">初始值 <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" value="1">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">每日重置</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="dailyReset" checked>
+                                                <label class="form-check-label" for="dailyReset">是</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <h5 class="mb-3">规则状态</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">规则状态 <span class="text-danger">*</span></label>
+                                            <div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="ruleStatus" id="enabled" checked>
+                                                    <label class="form-check-label" for="enabled">启用</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="ruleStatus" id="disabled">
+                                                    <label class="form-check-label" for="disabled">禁用</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">最后生成时间</label>
+                                            <input type="text" class="form-control" value="2023-10-15 14:30:25" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">最后生成值</label>
+                                            <input type="text" class="form-control" value="SUP-20231015-0001" readonly>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 class="mb-3">高级配置</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">编码前缀</label>
+                                            <input type="text" class="form-control" value="SUP">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">日期格式</label>
+                                            <select class="form-select">
+                                                <option>YYYYMMDD</option>
+                                                <option>YYYYMM</option>
+                                                <option>YYMMDD</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">分隔符</label>
+                                            <select class="form-select">
+                                                <option>-</option>
+                                                <option>_</option>
+                                                <option>.</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">编码生成策略</label>
+                                            <select class="form-select">
+                                                <option>自动递增</option>
+                                                <option>随机生成</option>
+                                                <option>外部系统生成</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-outline-secondary me-2">重置</button>
+                                <button class="btn btn-primary">保存规则</button>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="rule-preview">
+                            <div class="model-preview">
+                                <h5 class="mb-4">编码规则预览</h5>
+                                
+                                <div class="preview-card">
+                                    <div class="preview-field">
+                                        <div class="preview-label">规则名称</div>
+                                        <div class="preview-value">供应商编码规则</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">规则编码</div>
+                                        <div class="preview-value">RULE_SUPPLIER</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">编码格式</div>
+                                        <div class="preview-value">SUP-YYYYMMDD-NNNN</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">示例编码</div>
+                                        <div class="preview-value">SUP-20231015-0001</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">状态</div>
+                                        <div class="preview-value">已启用</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h5 class="mb-3">生成示例</h5>
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" placeholder="数量" value="5">
+                                        <button class="btn btn-outline-primary" type="button">生成</button>
+                                    </div>
+                                    <div class="list-group">
+                                        <div class="list-group-item">SUP-20231015-0001</div>
+                                        <div class="list-group-item">SUP-20231015-0002</div>
+                                        <div class="list-group-item">SUP-20231015-0003</div>
+                                        <div class="list-group-item">SUP-20231015-0004</div>
+                                        <div class="list-group-item">SUP-20231015-0005</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="rule-log">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>时间</th>
+                                            <th>操作</th>
+                                            <th>操作人</th>
+                                            <th>生成值</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2023-10-15 14:30:25</td>
+                                            <td>生成编码</td>
+                                            <td>系统自动</td>
+                                            <td>SUP-20231015-0001</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-10-14 09:15:42</td>
+                                            <td>生成编码</td>
+                                            <td>系统自动</td>
+                                            <td>SUP-20231014-0005</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-10-14 09:10:18</td>
+                                            <td>生成编码</td>
+                                            <td>系统自动</td>
+                                            <td>SUP-20231014-0004</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-10-13 16:45:33</td>
+                                            <td>规则修改</td>
+                                            <td>张经理</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-10-12 11:20:07</td>
+                                            <td>规则启用</td>
+                                            <td>李主管</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <nav>
+                                <ul class="pagination justify-content-end mb-0">
+                                    <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./bootstrap.bundle.min.js"></script>
+    <script>
+        // 简单的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 表单组件可拖拽效果
+            const components = document.querySelectorAll('.form-component');
+            components.forEach(component => {
+                component.setAttribute('draggable', 'true');
+                component.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', component.textContent.trim());
+                });
+            });
+            
+            // 表单区域放置效果
+            const canvas = document.querySelector('.form-canvas');
+            if (canvas) {
+                canvas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#3a9dca';
+                });
+                
+                canvas.addEventListener('dragleave', () => {
+                    canvas.style.borderColor = '#ccc';
+                });
+                
+                canvas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#ccc';
+                    const componentName = e.dataTransfer.getData('text/plain');
+                    
+                    // 创建新字段
+                    const newField = document.createElement('div');
+                    newField.className = 'form-field mb-3';
+                    newField.innerHTML = `
+                        <div class="field-actions">
+                            <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <label class="form-label">${componentName}</label>
+                        <input type="text" class="form-control" placeholder="请输入${componentName}">
+                    `;
+                    
+                    canvas.insertBefore(newField, canvas.querySelector('.text-end'));
+                });
+                
+                // 简单的表单字段操作
+                canvas.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('fa-trash')) {
+                        const field = e.target.closest('.form-field');
+                        if (field) {
+                            field.remove();
+                        }
+                    }
+                });
+            }
+            
+            // 新建规则按钮点击事件
+            const newRuleBtn = document.querySelector('.btn-primary[onclick="window.open(\'mdm_mx_add.html\')"]');
+            if (newRuleBtn) {
+                newRuleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('新建编码规则功能将在此打开新页面');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

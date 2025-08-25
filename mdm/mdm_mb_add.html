@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新建模板 - 主数据管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边导航 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-left: calc(var(--sidebar-width) + 20px);
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a9c;
+            border-color: #1e5a9c;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            font-size: 0.85rem;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 50px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .model-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #dee2e6;
+        }
+        
+        .form-builder {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .components-panel {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-right: 20px;
+        }
+        
+        .form-canvas {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            min-height: 500px;
+        }
+        
+        .form-component {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: move;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+        
+        .form-component:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .form-field {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+            position: relative;
+        }
+        
+        .form-field:hover {
+            border-color: var(--accent);
+        }
+        
+        .form-field .field-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .form-field:hover .field-actions {
+            opacity: 1;
+        }
+        
+        .badge-light-primary {
+            background-color: rgba(44, 111, 187, 0.1);
+            color: var(--primary);
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .template-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(44, 111, 187, 0.05);
+        }
+        
+        .template-card h5 {
+            margin-bottom: 10px;
+        }
+        
+        .template-meta {
+            display: flex;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .template-meta span {
+            margin-right: 15px;
+        }
+        
+        .template-tags {
+            margin-top: 10px;
+        }
+        
+        .template-tags .badge {
+            margin-right: 5px;
+        }
+        
+        .field-properties {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .field-property {
+            margin-bottom: 15px;
+        }
+        
+        .field-property label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .rule-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rule-title {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .rule-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        
+        .rule-content {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .preview-field {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                padding-left: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="text-center mb-0"><i class="fas fa-database me-2"></i><span class="nav-text">主数据平台</span></h5>
+            </div>
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cube"></i>
+                        <span class="nav-text">主数据管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-sitemap"></i>
+                        <span class="nav-text">模型管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">编码管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">数据质量</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="nav-text">数据分发</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h2 class="page-title"><i class="fas fa-file-alt me-2 text-primary"></i>新建模板</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">主数据管理</a></li>
+                            <li class="breadcrumb-item"><a href="#">模型管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">新建模板</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-save me-2"></i>保存草稿
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-rocket me-2"></i>发布模板
+                    </button>
+                </div>
+            </div>
+
+            <!-- 步骤指示器 -->
+            <div class="stepper">
+                <div class="step completed">
+                    <div class="step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-label">模板基本信息</div>
+                </div>
+                <div class="step active">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">字段配置</div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <div class="step-label">规则设置</div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">4</div>
+                    <div class="step-label">预览与完成</div>
+                </div>
+            </div>
+
+            <!-- 字段配置步骤 -->
+            <div class="step-content active">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-puzzle-piece me-2"></i>字段组件
+                            </div>
+                            <div class="card-body">
+                                <div class="form-component">
+                                    <i class="fas fa-font me-2"></i>单行文本
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-paragraph me-2"></i>多行文本
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-list-ul me-2"></i>下拉框
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-check-square me-2"></i>单选按钮
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-check-circle me-2"></i>复选框
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-calendar me-2"></i>日期选择
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-user me-2"></i>人员选择
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-building me-2"></i>部门选择
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-hashtag me-2"></i>数字输入
+                                </div>
+                                <div class="form-component">
+                                    <i class="fas fa-link me-2"></i>超链接
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <i class="fas fa-layer-group me-2"></i>字段库
+                            </div>
+                            <div class="card-body">
+                                <div class="search-box mb-3">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" class="form-control" placeholder="搜索字段...">
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-light text-dark me-2 mb-2">供应商名称</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">供应商编码</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">统一信用代码</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">注册地址</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">联系人</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">联系电话</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">供应商类型</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">合作状态</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">首次合作日期</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">主营产品</span>
+                                    <span class="badge bg-light text-dark me-2 mb-2">资质等级</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-edit me-2"></i>模板字段配置
+                                    <span class="badge bg-success ms-2">供应商模板</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-redo me-1"></i>重置</button>
+                                    <button class="btn btn-sm btn-primary ms-2"><i class="fas fa-save me-1"></i>保存</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>从左侧拖拽字段组件到此处，或点击字段库中的字段添加到模板
+                                </div>
+                                
+                                <div class="form-canvas">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">供应商名称 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" placeholder="请输入供应商名称">
+                                                <small class="text-muted">必填字段，最大长度100字符</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">供应商编码</label>
+                                                <input type="text" class="form-control" placeholder="系统自动生成" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-field mb-3">
+                                        <div class="field-actions">
+                                            <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                        <label class="form-label">注册地址</label>
+                                        <textarea class="form-control" rows="2" placeholder="请输入详细地址"></textarea>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">统一信用代码</label>
+                                                <input type="text" class="form-control" placeholder="请输入18位统一信用代码">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">供应商类型</label>
+                                                <select class="form-select">
+                                                    <option value="">请选择类型</option>
+                                                    <option>生产商</option>
+                                                    <option>代理商</option>
+                                                    <option>经销商</option>
+                                                    <option>服务商</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">资质等级</label>
+                                                <select class="form-select">
+                                                    <option value="">请选择等级</option>
+                                                    <option>A级</option>
+                                                    <option>B级</option>
+                                                    <option>C级</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">联系人</label>
+                                                <input type="text" class="form-control" placeholder="请输入联系人姓名">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">联系电话</label>
+                                                <input type="text" class="form-control" placeholder="请输入联系电话">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-field mb-3">
+                                        <div class="field-actions">
+                                            <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                        <label class="form-label">主营产品</label>
+                                        <textarea class="form-control" rows="2" placeholder="请输入主营产品信息"></textarea>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">合作状态</label>
+                                                <div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="status" id="active" checked>
+                                                        <label class="form-check-label" for="active">合作中</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="status" id="inactive">
+                                                        <label class="form-check-label" for="inactive">已终止</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-field">
+                                                <div class="field-actions">
+                                                    <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                                <label class="form-label">首次合作日期</label>
+                                                <input type="date" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center mt-4">
+                                        <button class="btn btn-light me-2"><i class="fas fa-plus-circle me-1"></i>添加字段</button>
+                                        <button class="btn btn-outline-primary"><i class="fas fa-layer-group me-1"></i>添加分组</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-sliders-h me-2"></i>字段属性
+                            </div>
+                            <div class="card-body">
+                                <div class="field-properties">
+                                    <div class="mb-3">
+                                        <label class="form-label">当前字段</label>
+                                        <input type="text" class="form-control" value="供应商名称" readonly>
+                                    </div>
+                                    
+                                    <div class="field-property">
+                                        <label class="form-label">字段标签</label>
+                                        <input type="text" class="form-control" value="供应商名称">
+                                    </div>
+                                    
+                                    <div class="field-property">
+                                        <label class="form-label">字段类型</label>
+                                        <select class="form-select">
+                                            <option>单行文本</option>
+                                            <option>多行文本</option>
+                                            <option>数字</option>
+                                            <option>日期</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="field-property">
+                                        <label class="form-label">是否必填</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="requiredSwitch" checked>
+                                            <label class="form-check-label" for="requiredSwitch">是</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="field-property">
+                                        <label class="form-label">默认值</label>
+                                        <input type="text" class="form-control" placeholder="设置默认值">
+                                    </div>
+                                    
+                                    <div class="field-property">
+                                        <label class="form-label">字段描述</label>
+                                        <textarea class="form-control" rows="2" placeholder="输入字段描述"></textarea>
+                                    </div>
+                                    
+                                    <div class="field-property">
+                                        <label class="form-label">校验规则</label>
+                                        <div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkLength" checked>
+                                                <label class="form-check-label" for="checkLength">长度限制 (1-100字符)</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkFormat">
+                                                <label class="form-check-label" for="checkFormat">格式校验</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 表单组件可拖拽效果
+            const components = document.querySelectorAll('.form-component');
+            components.forEach(component => {
+                component.setAttribute('draggable', 'true');
+                component.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', component.textContent.trim());
+                });
+            });
+            
+            // 表单区域放置效果
+            const canvas = document.querySelector('.form-canvas');
+            canvas.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                canvas.style.borderColor = '#3a9dca';
+            });
+            
+            canvas.addEventListener('dragleave', () => {
+                canvas.style.borderColor = '#ccc';
+            });
+            
+            canvas.addEventListener('drop', (e) => {
+                e.preventDefault();
+                canvas.style.borderColor = '#ccc';
+                const componentName = e.dataTransfer.getData('text/plain');
+                
+                // 创建新字段
+                const newField = document.createElement('div');
+                newField.className = 'form-field mb-3';
+                newField.innerHTML = `
+                    <div class="field-actions">
+                        <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <label class="form-label">${componentName}</label>
+                    <input type="text" class="form-control" placeholder="请输入${componentName}">
+                `;
+                
+                canvas.insertBefore(newField, canvas.querySelector('.text-center'));
+            });
+            
+            // 简单的表单字段操作
+            canvas.addEventListener('click', (e) => {
+                if (e.target.classList.contains('fa-trash')) {
+                    const field = e.target.closest('.form-field');
+                    if (field) {
+                        field.remove();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

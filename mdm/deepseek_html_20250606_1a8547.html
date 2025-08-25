@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主数据模型管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a2530 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-title {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sub-nav {
+            padding-left: 45px;
+        }
+
+        .sub-nav .nav-item {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        /* 主内容区样式 */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding-top: var(--header-height);
+        }
+
+        .header {
+            height: var(--header-height);
+            background: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            z-index: 99;
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        /* 功能卡片样式 */
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* 表单设计器区域 */
+        .form-builder-container {
+            display: flex;
+            height: 600px;
+            gap: 20px;
+        }
+
+        .fields-panel {
+            width: 250px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .fields-category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-weight: 600;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .field-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: grab;
+            border: 1px dashed #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .field-item i {
+            color: var(--primary);
+        }
+
+        .form-preview-area {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 1px dashed #ddd;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .form-preview {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        /* 分类树样式 */
+        .tree-container {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-height: 300px;
+        }
+
+        .tree-node {
+            margin-bottom: 8px;
+        }
+
+        .tree-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .tree-icon {
+            margin-right: 10px;
+            color: var(--warning);
+        }
+
+        .tree-children {
+            padding-left: 30px;
+            margin-top: 8px;
+        }
+
+        .tree-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .tree-action-btn {
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+
+        .tree-action-btn:hover {
+            color: var(--primary);
+        }
+
+        /* 模板管理样式 */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .template-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .template-body {
+            padding: 20px;
+        }
+
+        .template-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .template-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .template-footer {
+            padding: 15px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 版本控制样式 */
+        .version-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .version-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px;
+            width: 2px;
+            background: #ddd;
+        }
+
+        .version-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 30px;
+        }
+
+        .version-dot {
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success);
+            border: 3px solid white;
+            z-index: 1;
+        }
+
+        .version-current .version-dot {
+            background: var(--primary);
+            width: 24px;
+            height: 24px;
+            left: 10px;
+        }
+
+        .version-date {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .version-author {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .version-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* 测试区域样式 */
+        .test-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .test-form {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .test-results {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+
+        .result-label {
+            width: 200px;
+            font-weight: 500;
+        }
+
+        .result-value {
+            flex: 1;
+        }
+
+        .success {
+            color: var(--success);
+        }
+
+        .error {
+            color: var(--danger);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            .logo h1 span, .nav-title, .nav-item span {
+                display: none;
+            }
+            .main-content {
+                margin-left: 70px;
+            }
+            .header {
+                left: 70px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-builder-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .fields-panel {
+                width: 100%;
+            }
+            .test-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-database"></i> <span>主数据管理系统</span></h1>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-title">主菜单</div>
+                <div class="nav-item active">
+                    <i class="fas fa-cubes"></i>
+                    <span>模型管理</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-barcode"></i>
+                    <span>编码管理</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>质量管理</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>生命周期管理</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-share-alt"></i>
+                    <span>数据分发</span>
+                </div>
+                
+                <div class="nav-title">模型管理</div>
+                <div class="nav-item">
+                    <i class="fas fa-layer-group"></i>
+                    <span>模板库管理</span>
+                </div>
+                <div class="sub-nav">
+                    <div class="nav-item active">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>模板创建</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-file-import"></i>
+                        <span>模板导入/导出</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-eye"></i>
+                        <span>模板预览</span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-sitemap"></i>
+                    <span>模型分类管理</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cube"></i>
+                    <span>实体模型管理</span>
+                </div>
+                <div class="sub-nav">
+                    <div class="nav-item">
+                        <i class="fas fa-code-branch"></i>
+                        <span>版本控制</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-edit"></i>
+                        <span>在线表单设计</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-vial"></i>
+                        <span>数据录入测试</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-title">
+                    <i class="fas fa-cube"></i> 模型管理 - 模板创建
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <span>管理员</span>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- 模板创建卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-plus-circle"></i> 创建新模型模板
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-save"></i> 保存草稿
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-check"></i> 发布模型
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">模型名称</label>
+                            <input type="text" class="form-control" placeholder="输入模型名称">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">模型描述</label>
+                            <textarea class="form-control" rows="3" placeholder="描述模型用途和特点"></textarea>
+                        </div>
+                        
+                        <div class="form-builder-container">
+                            <!-- 字段面板 -->
+                            <div class="fields-panel">
+                                <div class="fields-category">
+                                    <div class="category-title">基础字段</div>
+                                    <div class="field-item">
+                                        <i class="fas fa-font"></i> 单行文本
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-paragraph"></i> 多行文本
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-hashtag"></i> 数字
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-calendar"></i> 日期
+                                    </div>
+                                </div>
+                                
+                                <div class="fields-category">
+                                    <div class="category-title">选择字段</div>
+                                    <div class="field-item">
+                                        <i class="fas fa-list"></i> 下拉选择
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-check-square"></i> 多选框
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-dot-circle"></i> 单选框
+                                    </div>
+                                </div>
+                                
+                                <div class="fields-category">
+                                    <div class="category-title">高级字段</div>
+                                    <div class="field-item">
+                                        <i class="fas fa-user"></i> 用户选择
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-link"></i> 关联字段
+                                    </div>
+                                    <div class="field-item">
+                                        <i class="fas fa-image"></i> 图片上传
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 表单预览区域 -->
+                            <div class="form-preview-area">
+                                <div class="form-title">表单预览</div>
+                                <div class="form-preview">
+                                    <div class="form-group">
+                                        <label class="form-label">产品名称</label>
+                                        <input type="text" class="form-control" placeholder="请输入产品名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">产品描述</label>
+                                        <textarea class="form-control" rows="3" placeholder="请输入产品描述"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">产品类别</label>
+                                        <select class="form-control">
+                                            <option>电子产品</option>
+                                            <option>家居用品</option>
+                                            <option>办公设备</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">发布日期</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模板库管理卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-layer-group"></i> 模板库管理
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-file-import"></i> 导入模板
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-file-export"></i> 导出模板
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="template-grid">
+                            <!-- 模板卡片 1 -->
+                            <div class="template-card">
+                                <div class="template-header">
+                                    <i class="fas fa-box-open fa-2x"></i>
+                                </div>
+                                <div class="template-body">
+                                    <div class="template-title">产品模型</div>
+                                    <div class="template-meta">
+                                        <div><i class="fas fa-user"></i> 创建人: 张经理</div>
+                                        <div><i class="fas fa-calendar"></i> 更新: 2023-06-15</div>
+                                    </div>
+                                    <p>用于管理公司所有产品的主数据模型，包含产品基础信息、分类和规格参数。</p>
+                                </div>
+                                <div class="template-footer">
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-eye"></i> 预览
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-download"></i> 导出
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 模板卡片 2 -->
+                            <div class="template-card">
+                                <div class="template-header" style="background-color: #27ae60;">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                                <div class="template-body">
+                                    <div class="template-title">客户模型</div>
+                                    <div class="template-meta">
+                                        <div><i class="fas fa-user"></i> 创建人: 王主管</div>
+                                        <div><i class="fas fa-calendar"></i> 更新: 2023-06-10</div>
+                                    </div>
+                                    <p>用于管理客户主数据，包含客户基本信息、联系方式和业务关系。</p>
+                                </div>
+                                <div class="template-footer">
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-eye"></i> 预览
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-download"></i> 导出
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 模板卡片 3 -->
+                            <div class="template-card">
+                                <div class="template-header" style="background-color: #e74c3c;">
+                                    <i class="fas fa-industry fa-2x"></i>
+                                </div>
+                                <div class="template-body">
+                                    <div class="template-title">供应商模型</div>
+                                    <div class="template-meta">
+                                        <div><i class="fas fa-user"></i> 创建人: 李总监</div>
+                                        <div><i class="fas fa-calendar"></i> 更新: 2023-06-05</div>
+                                    </div>
+                                    <p>用于管理供应商主数据，包含供应商基本信息、资质和合作信息。</p>
+                                </div>
+                                <div class="template-footer">
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-eye"></i> 预览
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-download"></i> 导出
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模型分类管理卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-sitemap"></i> 模型分类管理
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-success">
+                                <i class="fas fa-plus"></i> 添加分类
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tree-container">
+                            <div class="tree-node">
+                                <div class="tree-header">
+                                    <i class="fas fa-folder tree-icon"></i>
+                                    <span>产品管理</span>
+                                    <div class="tree-actions">
+                                        <button class="tree-action-btn"><i class="fas fa-plus"></i></button>
+                                        <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="tree-action-btn"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <div class="tree-children">
+                                    <div class="tree-node">
+                                        <div class="tree-header">
+                                            <i class="fas fa-folder tree-icon"></i>
+                                            <span>电子产品</span>
+                                            <div class="tree-actions">
+                                                <button class="tree-action-btn"><i class="fas fa-plus"></i></button>
+                                                <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                                <button class="tree-action-btn"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="tree-children">
+                                            <div class="tree-node">
+                                                <div class="tree-header">
+                                                    <i class="fas fa-cube tree-icon"></i>
+                                                    <span>手机产品模型</span>
+                                                    <div class="tree-actions">
+                                                        <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tree-node">
+                                                <div class="tree-header">
+                                                    <i class="fas fa-cube tree-icon"></i>
+                                                    <span>电脑产品模型</span>
+                                                    <div class="tree-actions">
+                                                        <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-node">
+                                        <div class="tree-header">
+                                            <i class="fas fa-folder tree-icon"></i>
+                                            <span>家居用品</span>
+                                            <div class="tree-actions">
+                                                <button class="tree-action-btn"><i class="fas fa-plus"></i></button>
+                                                <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                                <button class="tree-action-btn"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tree-node">
+                                <div class="tree-header">
+                                    <i class="fas fa-folder tree-icon"></i>
+                                    <span>客户管理</span>
+                                    <div class="tree-actions">
+                                        <button class="tree-action-btn"><i class="fas fa-plus"></i></button>
+                                        <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="tree-action-btn"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <div class="tree-children">
+                                    <div class="tree-node">
+                                        <div class="tree-header">
+                                            <i class="fas fa-cube tree-icon"></i>
+                                            <span>企业客户模型</span>
+                                            <div class="tree-actions">
+                                                <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-node">
+                                        <div class="tree-header">
+                                            <i class="fas fa-cube tree-icon"></i>
+                                            <span>个人客户模型</span>
+                                            <div class="tree-actions">
+                                                <button class="tree-action-btn"><i class="fas fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 版本控制卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-code-branch"></i> 模型版本控制
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-warning">
+                                <i class="fas fa-undo"></i> 回滚版本
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="version-timeline">
+                            <!-- 当前版本 -->
+                            <div class="version-item version-current">
+                                <div class="version-dot"></div>
+                                <div class="version-date">2023-06-15 14:30</div>
+                                <div class="version-author">张经理 - 当前版本</div>
+                                <div class="version-desc">
+                                    新增产品规格参数字段，优化分类选择逻辑
+                                </div>
+                                <div class="version-actions">
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-eye"></i> 查看详情
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 历史版本 -->
+                            <div class="version-item">
+                                <div class="version-dot"></div>
+                                <div class="version-date">2023-06-10 10:15</div>
+                                <div class="version-author">王技术员</div>
+                                <div class="version-desc">
+                                    修复日期字段校验问题，增加产品状态字段
+                                </div>
+                                <div class="version-actions">
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-eye"></i> 查看
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-download"></i> 下载
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="version-item">
+                                <div class="version-dot"></div>
+                                <div class="version-date">2023-06-01 09:45</div>
+                                <div class="version-author">李工程师</div>
+                                <div class="version-desc">
+                                    产品模型初始版本创建
+                                </div>
+                                <div class="version-actions">
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-eye"></i> 查看
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-download"></i> 下载
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据录入测试卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-vial"></i> 数据录入测试
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-play"></i> 执行测试
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="test-container">
+                            <!-- 测试表单 -->
+                            <div class="test-form">
+                                <h3>测试数据录入</h3>
+                                <div class="form-group">
+                                    <label class="form-label">产品名称</label>
+                                    <input type="text" class="form-control" placeholder="请输入产品名称">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">产品描述</label>
+                                    <textarea class="form-control" rows="3" placeholder="请输入产品描述"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">产品类别</label>
+                                    <select class="form-control">
+                                        <option>电子产品</option>
+                                        <option>家居用品</option>
+                                        <option>办公设备</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">发布日期</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">价格 (元)</label>
+                                    <input type="number" class="form-control" placeholder="0.00">
+                                </div>
+                                <button class="btn btn-success">
+                                    <i class="fas fa-check"></i> 提交测试数据
+                                </button>
+                            </div>
+                            
+                            <!-- 测试结果 -->
+                            <div class="test-results">
+                                <h3>测试结果</h3>
+                                <div class="result-title">数据验证结果</div>
+                                <div class="result-item">
+                                    <div class="result-label">产品名称:</div>
+                                    <div class="result-value success">验证通过</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">产品描述:</div>
+                                    <div class="result-value success">验证通过</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">产品类别:</div>
+                                    <div class="result-value success">验证通过</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">发布日期:</div>
+                                    <div class="result-value error">日期不能为空</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">价格:</div>
+                                    <div class="result-value error">必须大于0</div>
+                                </div>
+                                
+                                <div class="result-title" style="margin-top: 20px;">数据存储测试</div>
+                                <div class="result-item">
+                                    <div class="result-label">数据库连接:</div>
+                                    <div class="result-value success">连接成功</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">数据写入:</div>
+                                    <div class="result-value error">部分字段验证失败</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">事务测试:</div>
+                                    <div class="result-value success">回滚机制正常</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 这里应该包含Vue.js逻辑用于实现动态交互
+        // 包括拖拽表单构建器、树形结构操作等
+        // 由于是静态展示，这里省略具体JavaScript实现
+    </script>
+</body>
+</html>

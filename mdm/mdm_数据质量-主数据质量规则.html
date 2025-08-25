@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据质量管理 - 规则管理</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background-color: #f5f6f7;
+            color: #333;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            background-color: #fff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .logo svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb span {
+            margin: 0 5px;
+            color: #888;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-right > div {
+            margin-left: 20px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-badge {
+            background-color: #ff4d4f;
+            color: #fff;
+            border-radius: 50%;
+            padding: 0 4px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            padding: 20px 0;
+            background-color: #fff;
+            margin-top: 20px;
+        }
+        
+        .search-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .search-label {
+            width: 60px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .search-input {
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .search-input select {
+            width: 100%;
+            padding: 5px 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            appearance: none;
+            background-color: #fff;
+        }
+        
+        .search-buttons {
+            margin-left: auto;
+            display: flex;
+        }
+        
+        .btn {
+            padding: 5px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        
+        .btn-primary {
+            background-color: #1890ff;
+            color: #fff;
+        }
+        
+        .btn-light {
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-danger {
+            background-color: #fff;
+            color: #ff4d4f;
+            border: 1px solid #ffe0e0;
+        }
+        
+        .btn svg {
+            margin-right: 5px;
+        }
+        
+        /* 操作按钮区域 */
+        .action-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 表格样式 */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 13px;
+        }
+        
+        th {
+            background-color: #fafafa;
+            font-weight: 500;
+            color: #333;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        th:after {
+            content: '';
+            display: inline-block;
+            margin-left: 5px;
+            vertical-align: middle;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid #888;
+        }
+        
+        th.asc:after {
+            border-top: none;
+            border-bottom: 4px solid #888;
+        }
+        
+        tr:hover {
+            background-color: #fff;
+        }
+        
+        /* 表格内容样式 */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .status-active {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .status-paused {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        /* 操作列样式 */
+        .action-link {
+            color: #1890ff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: 13px;
+        }
+        
+        .action-link.danger {
+            color: #ff4d4f;
+        }
+        
+        .action-link svg {
+            margin-right: 3px;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px;
+        }
+        
+        .pagination-info {
+            margin-right: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .pagination-list {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .pagination-item {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .pagination-item.active {
+            background-color: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+        
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        
+        .pagination-jump input {
+            width: 50px;
+            padding: 0 5px;
+            text-align: center;
+            margin: 0 5px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+        }
+        
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .toolbar-icon {
+            margin-left: 15px;
+            cursor: pointer;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+        </div>
+        <div class="breadcrumb">
+            <span>首页</span>
+            <span>/</span>
+            <a href="#">数据质量管理</a>
+            <span>/</span>
+            <span>规则管理</span>
+        </div>
+        <div class="navbar-right">
+            <div>切换组织</div>
+            <div>简体中文 ▼</div>
+            <div>🔔 <span class="notification-badge">19</span></div>
+            <div>🔍</div>
+            <div>⋮</div>
+            <div>👤 ▼</div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="container">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <span>首页</span>
+            </div>
+            <div class="toolbar-right">
+                <div class="toolbar-icon">🔍</div>
+                <div class="toolbar-icon">⚙️</div>
+            </div>
+        </div>
+
+        <!-- 搜索按钮 -->
+        <div class="search-bar">
+            <div class="search-item">
+                <div class="search-label">主题域</div>
+                <div class="search-input">
+                    <select>
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-item">
+                <div class="search-label">主题</div>
+                <div class="search-input">
+                    <select>
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-item">
+                <div class="search-label">业务对象</div>
+                <div class="search-input">
+                    <select>
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-item">
+                <div class="search-label">逻辑实体</div>
+                <div class="search-input">
+                    <select>
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-item">
+                <div class="search-label">属性</div>
+                <div class="search-input">
+                    <select>
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-item">
+                <div class="search-label">状态</div>
+                <div class="search-input">
+                    <select>
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-buttons">
+                <button class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 搜索</button>
+                <button class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> 重置</button>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="window.open('mdm_数据质量-主数据质量规则-1.html')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> 新增</button>
+            <button class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> 启用</button>
+            <button class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg> 停用</button>
+            <button class="btn btn-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 删除</button>
+        </div>
+
+        <!-- 表格 -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>主题域</th>
+                        <th>主题</th>
+                        <th>业务对象</th>
+                        <th>逻辑实体</th>
+                        <th>属性</th>
+                        <th>规则名称</th>
+                        <th>规则描述</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>制造</td>
+                        <td>国产一线</td>
+                        <td>海航运输</td>
+                        <td>船舶成品</td>
+                        <td>船舶登记号</td>
+                        <td>测试规则</td>
+                        <td>测试</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-03-30 16:44:30</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>制造</td>
+                        <td>国产一线</td>
+                        <td>海航运输</td>
+                        <td>船舶成品</td>
+                        <td>船舶识别号</td>
+                        <td>ZS</td>
+                        <td>DESC</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-03-30 17:02:47</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>联通MYSQL</td>
+                        <td>设备</td>
+                        <td>节能设备</td>
+                        <td>节电设备表</td>
+                        <td>设备名称</td>
+                        <td>分析设备名称为空情况</td>
+                        <td>检查设备名称为空情况</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-04-04 15:08:14</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>联通MYSQL</td>
+                        <td>设备</td>
+                        <td>节能设备</td>
+                        <td>节电设备表</td>
+                        <td>额定电流</td>
+                        <td>检查低电流设备完好率</td>
+                        <td>检查低电流设备完好率</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-04-04 15:53:19</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>制造</td>
+                        <td>国产一线</td>
+                        <td>海航运输</td>
+                        <td>船舶成品</td>
+                        <td>船舶登记号</td>
+                        <td>test001</td>
+                        <td>test1</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-04-06 16:19:50</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>制造</td>
+                        <td>国产一线</td>
+                        <td>海航运输</td>
+                        <td>船舶成品</td>
+                        <td>船舶登记号</td>
+                        <td>周test1</td>
+                        <td>周1</td>
+                        <td><span class="status-badge status-paused">停用</span></td>
+                        <td>2023-04-06 17:01:47</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link">启用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>制造</td>
+                        <td>国产一线</td>
+                        <td>海航运输</td>
+                        <td>船舶成品</td>
+                        <td>测试部门名称为空检查</td>
+                        <td>测试部门名称为空检查</td>
+                        <td>测试部门名称为空检查</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-04-17 17:33:15</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>研发主题域</td>
+                        <td>研发 主题1</td>
+                        <td>研发 主题1-业务对象1</td>
+                        <td>研发 主题1-业务对象1-实体2</td>
+                        <td>aaa</td>
+                        <td>啊啊</td>
+                        <td>啊啊</td>
+                        <td><span class="status-badge status-active">启用</span></td>
+                        <td>2023-04-19 15:44:40</td>
+                        <td>
+                            <a href="#" class="action-link">详情</a>
+                            <a href="#" class="action-link">编辑</a>
+                            <a href="#" class="action-link danger">停用</a>
+                            <a href="#" class="action-link danger">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination">
+            <div class="pagination-info">共 39 条 <span style="margin-left: 10px;">10条/页</span></div>
+            <div class="pagination-list">
+                <div class="pagination-item"><</div>
+                <div class="pagination-item active">1</div>
+                <div class="pagination-item">2</div>
+                <div class="pagination-item">3</div>
+                <div class="pagination-item">4</div>
+                <div class="pagination-item">></div>
+            </div>
+            <div class="pagination-jump">
+                <span>前往</span>
+                <input type="text" value="1">
+                <span>页</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 表格排序功能
+        document.querySelectorAll('th').forEach((header, index) => {
+            if (index === 0) return; // 跳过选择框列
+            
+            header.addEventListener('click', function() {
+                // 移除所有列的排序样式
+                document.querySelectorAll('th').forEach(th => {
+                    th.classList.remove('asc');
+                });
+                
+                // 为当前点击的列添加排序样式
+                this.classList.toggle('asc');
+                
+                // 这里可以添加实际的排序逻辑
+                console.log('排序：', this.textContent.trim());
+            });
+        });
+        
+        // 搜索按钮点击事件
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            console.log('搜索按钮点击');
+        });
+        
+        // 重置按钮点击事件
+        document.querySelector('.btn-light').addEventListener('click', function() {
+            // 重置所有选择框
+            document.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+            console.log('重置按钮点击');
+        });
+        
+        // 行选择功能
+        document.querySelectorAll('tbody input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.style.backgroundColor = '#f0f7ff';
+                } else {
+                    row.style.backgroundColor = '';
+                }
+            });
+        });
+        
+        // 分页功能
+        document.querySelectorAll('.pagination-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.textContent !== '<' && this.textContent !== '>' && this.textContent !== '1' && this.textContent !== '2' && this.textContent !== '3' && this.textContent !== '4') return;
+                
+                document.querySelector('.pagination-item.active').classList.remove('active');
+                this.classList.add('active');
+                console.log('切换到页：', this.textContent);
+            });
+        });
+        
+        // 详情、编辑、启用/停用、删除按钮点击事件
+        document.querySelectorAll('.action-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('点击操作：', this.textContent.trim());
+            });
+        });
+    </script>
+</body>
+</html>

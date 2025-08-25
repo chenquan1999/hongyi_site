@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型管理 - 主数据管理系统</title>
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./all.min.css">
+    <style>
+        :root {
+            --primary: #2c6fbb;
+            --secondary: #4a7dbb;
+            --accent: #3a9dca;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边导航 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-left: calc(var(--sidebar-width) + 20px);
+            transition: all 0.3s;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5a9c;
+            border-color: #1e5a9c;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            font-size: 0.85rem;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 300px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 50px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .model-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #dee2e6;
+        }
+        
+        .form-builder {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .components-panel {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-right: 20px;
+        }
+        
+        .form-canvas {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            min-height: 500px;
+        }
+        
+        .form-component {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: move;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+        
+        .form-component:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .form-field {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+            position: relative;
+        }
+        
+        .form-field:hover {
+            border-color: var(--accent);
+        }
+        
+        .form-field .field-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .form-field:hover .field-actions {
+            opacity: 1;
+        }
+        
+        .badge-light-primary {
+            background-color: rgba(44, 111, 187, 0.1);
+            color: var(--primary);
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .step.active .step-icon {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .step.completed .step-icon {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .template-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(44, 111, 187, 0.05);
+        }
+        
+        .template-card h5 {
+            margin-bottom: 10px;
+        }
+        
+        .template-meta {
+            display: flex;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .template-meta span {
+            margin-right: 15px;
+        }
+        
+        .template-tags {
+            margin-top: 10px;
+        }
+        
+        .template-tags .badge {
+            margin-right: 5px;
+        }
+        
+        .field-properties {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .field-property {
+            margin-bottom: 15px;
+        }
+        
+        .field-property label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .rule-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rule-title {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .rule-actions .btn {
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        
+        .rule-content {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .preview-field {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                padding-left: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="text-center mb-0"><i class="fas fa-database me-2"></i><span class="nav-text">主数据平台</span></h5>
+            </div>
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">控制台</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cube"></i>
+                        <span class="nav-text">主数据管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-sitemap"></i>
+                        <span class="nav-text">模型管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-barcode"></i>
+                        <span class="nav-text">编码管理</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">数据质量</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-share-alt"></i>
+                        <span class="nav-text">数据分发</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h2 class="page-title"><i class="fas fa-sitemap me-2 text-primary"></i>模型管理</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">主数据管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">模型管理</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="search-box me-3">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" placeholder="搜索模型...">
+                    </div>
+                    <button class="btn btn-primary" onclick="window.open('mdm_新建主数据模型.html')">
+                        <i class="fas fa-plus me-2"></i>新建模型
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 模型列表 -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-list me-2 text-primary"></i>模型列表</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-upload me-1"></i>导入</button>
+                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>导出</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>新建模型</button>
+                                </div>
+                                <div class="d-flex">
+                                    <select class="form-select form-select-sm me-2" style="width: 150px;">
+                                        <option>所有状态</option>
+                                        <option>已发布</option>
+                                        <option>草稿</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" style="width: 150px;">
+                                        <option>默认排序</option>
+                                        <option>名称升序</option>
+                                        <option>名称降序</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>模型名称</th>
+                                            <th>模型类型</th>
+                                            <th>创建人</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>供应商主数据模型</td>
+                                            <td>业务模型</td>
+                                            <td>张经理</td>
+                                            <td><span class="status-badge status-active">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>客户主数据模型</td>
+                                            <td>业务模型</td>
+                                            <td>李主管</td>
+                                            <td><span class="status-badge status-active">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>产品主数据模型</td>
+                                            <td>业务模型</td>
+                                            <td>王总监</td>
+                                            <td><span class="status-badge status-draft">草稿</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-secondary action-btn">发布</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>组织架构模型</td>
+                                            <td>系统模型</td>
+                                            <td>赵专员</td>
+                                            <td><span class="status-badge status-active">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                <button class="btn btn-sm btn-outline-success action-btn">应用</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <nav>
+                                <ul class="pagination justify-content-end mb-0">
+                                    <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模型统计与工具 -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-2 text-primary"></i>模型统计
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h5 class="mb-3">模型使用情况</h5>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted">已使用: 75%</small>
+                            </div>
+                            
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">12</h5>
+                                            <small class="text-muted">已发布模型</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">4</h5>
+                                            <small class="text-muted">草稿模型</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">38</h5>
+                                            <small class="text-muted">总模型数量</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-0">15</h5>
+                                            <small class="text-muted">本月新增</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tools me-2 text-primary"></i>常用工具
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-code me-2 text-primary"></i>模型导入工具
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">HOT</span>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-history me-2 text-primary"></i>模型历史版本
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-sync-alt me-2 text-primary"></i>模型同步工具
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-file-import me-2 text-primary"></i>批量导入导出
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-cogs me-2 text-primary"></i>系统参数配置
+                                </a>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h6 class="mb-3">快速操作</h6>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="选择模型类型">
+                                    <button class="btn btn-outline-secondary" type="button">生成</button>
+                                </div>
+                                <div class="alert alert-light" role="alert">
+                                    最近操作: 供应商模型 - 2023-10-15 14:30:25
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模型详情配置 -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-cogs me-2 text-primary"></i>模型详情配置</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-history me-1"></i>历史版本</button>
+                        <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>新建模型</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#model-config" data-bs-toggle="tab">模型配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#field-design" data-bs-toggle="tab">字段设计</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#rule-setting" data-bs-toggle="tab">规则设置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#model-preview" data-bs-toggle="tab">模型预览</a></li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="model-config">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <h5 class="mb-3">基础信息</h5>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">模型名称 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" value="供应商主数据模型">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">模型编码 <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" value="MDM-SUPPLIER">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">模型描述</label>
+                                            <textarea class="form-control" rows="3">供应商主数据模型，包含供应商基本信息、资质信息、联系人信息等</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">模型类型</label>
+                                            <select class="form-select">
+                                                <option>业务模型</option>
+                                                <option>系统模型</option>
+                                                <option>分析模型</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 class="mb-3">模型关联</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">关联模板</label>
+                                            <select class="form-select">
+                                                <option>供应商模板</option>
+                                                <option>客户模板</option>
+                                                <option>产品模板</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">编码规则</label>
+                                            <select class="form-select">
+                                                <option>供应商编码规则</option>
+                                                <option>客户编码规则</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <h5 class="mb-3">版本信息</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">当前版本</label>
+                                            <input type="text" class="form-control" value="V2.1" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">版本说明</label>
+                                            <textarea class="form-control" rows="2">增加供应商资质信息字段，优化联系人信息结构</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">创建时间</label>
+                                            <input type="text" class="form-control" value="2023-10-10" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">最后修改时间</label>
+                                            <input type="text" class="form-control" value="2023-10-15" readonly>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 class="mb-3">高级配置</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">数据存储策略</label>
+                                            <select class="form-select">
+                                                <option>默认数据库</option>
+                                                <option>独立数据库</option>
+                                                <option>分布式存储</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">数据备份频率</label>
+                                            <select class="form-select">
+                                                <option>每日备份</option>
+                                                <option>每周备份</option>
+                                                <option>每月备份</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">数据保留周期</label>
+                                            <select class="form-select">
+                                                <option>永久保留</option>
+                                                <option>5年</option>
+                                                <option>10年</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button class="btn btn-outline-secondary me-2">重置</button>
+                                <button class="btn btn-primary">保存配置</button>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="field-design">
+                            <div class="model-preview">
+                                <h5 class="mb-4">字段设计预览</h5>
+                                
+                                <div class="preview-card">
+                                    <div class="preview-field">
+                                        <div class="preview-label">字段名称</div>
+                                        <div class="preview-value">供应商名称</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">字段类型</div>
+                                        <div class="preview-value">单行文本</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">是否必填</div>
+                                        <div class="preview-value">是</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">字段长度</div>
+                                        <div class="preview-value">100字符</div>
+                                    </div>
+                                    <div class="preview-field">
+                                        <div class="preview-label">校验规则</div>
+                                        <div class="preview-value">长度限制(1-100字符)</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h5 class="mb-3">字段列表</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>字段名称</th>
+                                                    <th>字段类型</th>
+                                                    <th>必填</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>供应商名称</td>
+                                                    <td>单行文本</td>
+                                                    <td>是</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                        <button class="btn btn-sm btn-outline-danger action-btn">删除</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>供应商编码</td>
+                                                    <td>单行文本</td>
+                                                    <td>是</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                        <button class="btn btn-sm btn-outline-danger action-btn">删除</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>统一信用代码</td>
+                                                    <td>单行文本</td>
+                                                    <td>否</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary action-btn">编辑</button>
+                                                        <button class="btn btn-sm btn-outline-danger action-btn">删除</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-end">
+                                        <button class="btn btn-light me-2"><i class="fas fa-plus-circle me-1"></i>添加字段</button>
+                                        <button class="btn btn-outline-primary"><i class="fas fa-layer-group me-1"></i>添加分组</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="rule-setting">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>在此配置主数据模型的业务规则和校验规则
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-4">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">字段校验规则</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>字段名</th>
+                                                            <th>规则类型</th>
+                                                            <th>规则内容</th>
+                                                            <th>操作</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>供应商名称</td>
+                                                            <td>必填</td>
+                                                            <td>-</td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                                <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>统一信用代码</td>
+                                                            <td>格式校验</td>
+                                                            <td>18位数字/字母</td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                                <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>联系人电话</td>
+                                                            <td>格式校验</td>
+                                                            <td>手机号/固定电话</td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                                                                <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-primary mt-2"><i class="fas fa-plus me-1"></i>添加规则</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">业务规则</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">规则名称</label>
+                                                <input type="text" class="form-control" placeholder="输入规则名称">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">规则描述</label>
+                                                <textarea class="form-control" rows="2" placeholder="规则详细描述"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">规则脚本</label>
+                                                <textarea class="form-control" rows="4" placeholder="输入规则脚本"></textarea>
+                                                <small class="text-muted">支持JavaScript语法</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <button class="btn btn-primary">保存规则</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="model-preview">
+                            <h5 class="mb-4">模型预览</h5>
+                            
+                            <div class="preview-card">
+                                <div class="preview-field">
+                                    <div class="preview-label">模型名称</div>
+                                    <div class="preview-value">供应商主数据模型</div>
+                                </div>
+                                <div class="preview-field">
+                                    <div class="preview-label">模型编码</div>
+                                    <div class="preview-value">MDM-SUPPLIER</div>
+                                </div>
+                                <div class="preview-field">
+                                    <div class="preview-label">模型类型</div>
+                                    <div class="preview-value">业务模型</div>
+                                </div>
+                                <div class="preview-field">
+                                    <div class="preview-label">当前版本</div>
+                                    <div class="preview-value">V2.1</div>
+                                </div>
+                                <div class="preview-field">
+                                    <div class="preview-label">状态</div>
+                                    <div class="preview-value">已发布</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h5 class="mb-3">示例数据预览</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>供应商编码</th>
+                                                <th>供应商名称</th>
+                                                <th>统一信用代码</th>
+                                                <th>联系人</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>SUP-20231015-0001</td>
+                                                <td>北京卓越科技有限公司</td>
+                                                <td>91110105MA04FK8260</td>
+                                                <td>张经理</td>
+                                            </tr>
+                                            <tr>
+                                                <td>SUP-20231014-0005</td>
+                                                <td>上海创新科技有限公司</td>
+                                                <td>91310105MA04FK8260</td>
+                                                <td>李经理</td>
+                                            </tr>
+                                            <tr>
+                                                <td>SUP-20231013-0003</td>
+                                                <td>广州发展科技有限公司</td>
+                                                <td>91440105MA04FK8260</td>
+                                                <td>王经理</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end mt-4">
+                                <button class="btn btn-primary me-2"><i class="fas fa-check me-1"></i>确认模型</button>
+                                <button class="btn btn-outline-secondary"><i class="fas fa-edit me-1"></i>修改模型</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./bootstrap.bundle.min.js"></script>
+    <script>
+        // 简单的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 表单组件可拖拽效果
+            const components = document.querySelectorAll('.form-component');
+            components.forEach(component => {
+                component.setAttribute('draggable', 'true');
+                component.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', component.textContent.trim());
+                });
+            });
+            
+            // 表单区域放置效果
+            const canvas = document.querySelector('.form-canvas');
+            if (canvas) {
+                canvas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#3a9dca';
+                });
+                
+                canvas.addEventListener('dragleave', () => {
+                    canvas.style.borderColor = '#ccc';
+                });
+                
+                canvas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#ccc';
+                    const componentName = e.dataTransfer.getData('text/plain');
+                    
+                    // 创建新字段
+                    const newField = document.createElement('div');
+                    newField.className = 'form-field mb-3';
+                    newField.innerHTML = `
+                        <div class="field-actions">
+                            <button class="btn btn-sm btn-link text-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-link text-danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <label class="form-label">${componentName}</label>
+                        <input type="text" class="form-control" placeholder="请输入${componentName}">
+                    `;
+                    
+                    canvas.insertBefore(newField, canvas.querySelector('.text-end'));
+                });
+                
+                // 简单的表单字段操作
+                canvas.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('fa-trash')) {
+                        const field = e.target.closest('.form-field');
+                        if (field) {
+                            field.remove();
+                        }
+                    }
+                });
+            }
+            
+            // 新建模型按钮点击事件
+            const newModelBtn = document.querySelector('.btn-primary[onclick="window.open(\'mdm_mx_add.html\')"]');
+            if (newModelBtn) {
+                newModelBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('新建模型功能将在此打开新页面');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
